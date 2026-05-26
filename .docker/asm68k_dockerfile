@@ -1,0 +1,8 @@
+FROM --platform=linux/amd64 scottyhardy/docker-wine:latest
+
+COPY ./Assembler/* /home/wineuser/app/
+
+WORKDIR /home/wineuser/app
+
+ENTRYPOINT ["wine"]
+CMD ["asm68k.exe"]

@@ -53,3 +53,8 @@ dkms.conf
 
 # debug information files
 *.dwo
+.make_config
+dist/
+Assembler/vasm68k_mot
+Assembler/vasm/
+Assembler/vasmm68k_mot
