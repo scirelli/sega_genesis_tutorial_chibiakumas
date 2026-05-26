@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE softwarelist SYSTEM "softwarelist.dtd">
+<!--
+license:CC0
+-->
+<softwarelist name="neocd" description="SNK NeoGeo CD CD-ROMs">
+
+	<software name="ChibiAkumasGameCD">
+		<description>ChibiAkumasGameCD</description>
+		<year>2021</year>
+		<publisher>LearnASM.Net</publisher>
+		<info name="alt_title" value="ChibiAkumasGameCD" />
+		<info name="serial" value="NGCD-001 (JPN)" />
+		<info name="release" value="20210101 (JPN)" />
+		<part name="cdrom" interface="neocd_cdrom">
+			<diskarea name="cdrom">
+				<disk name="ChibiAkumasGameCD" sha1="%cdsha%"/>
+			</diskarea>
+		</part>
+	</software>
+	
+</softwarelist>

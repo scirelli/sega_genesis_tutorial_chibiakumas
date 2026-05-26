@@ -1,0 +1,102 @@
+F00:0001       
+F00:0002       	SECTION TEXT		;CODE Section
+F00:0003       	
+F00:0004       	lea Message,a3
+               S01:00000000:  47 FA 00 12
+F00:0005       	jsr PrintString		;Show String Message
+               S01:00000004:  61 42
+F00:0006           
+F00:0007       	jsr NewLine			;Move down a line
+               S01:00000006:  61 32
+F00:0008       
+F00:0009       	;Wait for a key before returning
+F00:0010       	move.w #1,-(sp) 	;$01 - ConIn	
+               S01:00000008:  3F 3C 00 01
+F00:0011       	trap #1				;Call GemDos
+               S01:0000000C:  4E 41
+F00:0012       	addq.l #2,sp		;Remove 1 word from stack	
+               S01:0000000E:  54 8F
+F00:0013       	
+F00:0014        	clr.w -(sp)
+               S01:00000010:  42 67
+F00:0015       	trap #1					;Return to OS
+               S01:00000012:  4E 41
+F00:0016       	
+F00:0017       Message:    dc.b 'Hello World',255
+               S01:00000014:  48 65 6C 6C 6F 20 57 6F 72 6C 64
+               S01:0000001F:  FF
+F00:0018       	even	
+F00:0019       	
+F00:0020       PrintChar:
+F00:0021       	moveM.l d0-d7/a0-a7,-(sp)
+               S01:00000020:  48 E7 FF FF
+F00:0022       		and.l #$00FF,d0	;Keep only Low Byte
+               S01:00000024:  C0 BC 00 00 00 FF
+F00:0023       		move.w d0,-(sp) ;Char (W) to show to screen
+               S01:0000002A:  3F 00
+F00:0024       		move.w #2,-(sp) ;$02 - ConOut (c_conout)
+               S01:0000002C:  3F 3C 00 02
+F00:0025       		trap #1			;Call GemDos
+               S01:00000030:  4E 41
+F00:0026       		addq.l #4,sp	;Remove 2 words from stack
+               S01:00000032:  58 8F
+F00:0027       	moveM.l (sp)+,d0-d7/a0-a7
+               S01:00000034:  4C DF FF FF
+F00:0028       	rts
+               S01:00000038:  4E 75
+F00:0029       	
+F00:0030       
+F00:0031       
+F00:0032       NewLine:
+F00:0033       	move.b #$0D,d0		;Char 13 CR
+               S01:0000003A:  10 3C 00 0D
+F00:0034       	jsr PrintChar
+               S01:0000003E:  61 E0
+F00:0035       	move.b #$0A,d0		;Char 10 LF
+               S01:00000040:  10 3C 00 0A
+F00:0036       	jsr PrintChar
+               S01:00000044:  61 DA
+F00:0037       	rts
+               S01:00000046:  4E 75
+F00:0038       
+F00:0039       PrintString:
+F00:0040       		move.b (a3)+,d0		;Read a character in from A3
+               S01:00000048:  10 1B
+F00:0041       		cmp.b #255,d0
+               S01:0000004A:  B0 3C 00 FF
+F00:0042       		beq PrintString_Done;return on 255
+               S01:0000004E:  67 04
+F00:0043       		jsr PrintChar		;Print the Character
+               S01:00000050:  61 CE
+F00:0044       		bra PrintString
+               S01:00000052:  60 F4
+F00:0045       PrintString_Done:		
+F00:0046       	rts
+               S01:00000054:  4E 75
+F00:0047       	
+F00:0048       
+
+
+Sections:
+S01  TEXT
+
+
+Sources:
+F00  AST_HelloWorld.asm
+
+
+Symbols:
+PrintString_Done LAB (0x54) sec=TEXT 
+PrintChar LAB (0x20) sec=TEXT 
+NewLine LAB (0x3a) sec=TEXT 
+PrintString LAB (0x48) sec=TEXT 
+Message LAB (0x14) sec=TEXT 
+__LINE__ EXPR(48=0x0) INTERNAL 
+__FO EXPR(0=0x0) INTERNAL 
+__RS EXPR(0=0x0) INTERNAL 
+REPTN EXPR(-1=0xffffffff) INTERNAL 
+__VASM EXPR(1=0x0) INTERNAL 
+BuildAST EXPR(1=0x0) UNUSED 
+vasm EXPR(1=0x0) UNUSED 
+
+There have been no errors.

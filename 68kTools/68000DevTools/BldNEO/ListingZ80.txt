@@ -1,0 +1,886 @@
+F00:0001       ; Dummy Z80 sound driver for Neo-Geo
+F00:0002       ; Implements a bare minimum working sound driver.
+F00:0003       ;==============================================================================;
+F00:0004       ; Things *not* found in this driver:
+F00:0005       ; * Sound playback
+F00:0006       ; * Coin sound (code $5F)
+F00:0007       ; * Eyecatch music (code $7F)
+F00:0008       ;==============================================================================;
+F00:0009       	org $0000
+F00:0010       
+F00:0011       ; Start ($0000)
+F00:0012       ; Z80 program entry point.
+F00:0013       
+F00:0014       Start:
+F00:0015       	; disable interrupts and jump to the real beginning of the code
+F00:0016       	di
+               S01:00000000:  F3
+F00:0017       	jp   EntryPoint
+               S01:00000001:  C3 CF 00
+F00:0018       
+F00:0019       ;==============================================================================;
+F00:0020       ; The Z80 has a number of interrupt vectors at the following locations:
+F00:0021       ; $0000, $0008, $0010, $0018, $0020, $0028, $0030, $0038
+F00:0022       
+F00:0023       ; $0000 and $0038 are reserved for the start location and IRQ, respectively.
+F00:0024       
+F00:0025       ; These vectors can be called via "rst n", where n is one of the locations in
+F00:0026       ; the above list (though only the lower byte, e.g. rst $08).
+F00:0027       ;==============================================================================;
+F00:0028       	org $0008
+F00:0029       
+F00:0030       ; CheckBusyFlag ($0008)
+F00:0031       ; Continually checks the busy flag in Status 0 until it's clear.
+F00:0032       ; This routine is from smkdan's example M1 driver.
+F00:0033       
+F00:0034       CheckBusyFlag:
+F00:0035       	in   a,(4)
+               S02:00000008:  DB 04
+F00:0036       	add  a
+               S02:0000000A:  87
+F00:0037       	jr   C,CheckBusyFlag
+               S02:0000000B:  38 FB
+F00:0038       	ret
+               S02:0000000D:  C9
+F00:0039       
+F00:0040       ;==============================================================================;
+F00:0041       	org $0010
+F00:0042       
+F00:0043       ; j_write45 ($0010)
+F00:0044       ; Jumps to a routine that writes the contents of de to ports 4 and 5.
+F00:0045       
+F00:0046       j_write45:
+F00:0047       	jp   write45
+               S03:00000010:  C3 FE 00
+F00:0048       
+F00:0049       ;==============================================================================;
+F00:0050       	org $0018
+F00:0051       
+F00:0052       ; j_write67 ($0018)
+F00:0053       ; Jumps to a routine that writes the contents of de to ports 6 and 7.
+F00:0054       
+F00:0055       j_write67:
+F00:0056       	jp   write67
+               S04:00000018:  C3 09 01
+F00:0057       
+F00:0058       ;==============================================================================;
+F00:0059       ; $0020 - unused
+F00:0060       ; $0028 - unused
+F00:0061       ; $0030 - unused
+F00:0062       ;==============================================================================;
+F00:0063       	org $0038
+F00:0064       
+F00:0065       ; j_IRQ
+F00:0066       ; Disables interrupts and jumps to the real IRQ routine.
+F00:0067       
+F00:0068       j_IRQ:
+F00:0069       	di
+               S05:00000038:  F3
+F00:0070       	jp   IRQ
+               S05:00000039:  C3 B3 00
+F00:0071       
+F00:0072       ;==============================================================================;
+F00:0073       ; This section identifies the driver name, version, and author.
+F00:0074       	ascii "Dummy Z80 sound driver v20151229 | freem"
+               S05:0000003C:  44 75 6D 6D 79 20 5A 38 30 20 73 6F 75 6E 64 20
+               S05:0000004C:  64 72 69 76 65 72 20 76 32 30 31 35 31 32 32 39
+F00:0075       
+F00:0076       ;==============================================================================;
+F00:0077       	org $0066
+F00:0078       
+F00:0079       ; NMI
+F00:0080       NMI:
+F00:0081       	; save register state
+F00:0082       	push af
+               S06:00000066:  F5
+F00:0083       	push bc
+               S06:00000067:  C5
+F00:0084       	push de
+               S06:00000068:  D5
+F00:0085       	push hl
+               S06:00000069:  E5
+F00:0086       
+F00:0087       	in   a,(0)
+               S06:0000006A:  DB 00
+F00:0088       	ld   b,a
+               S06:0000006C:  47
+F00:0089       
+F00:0090       	; Check for Neo-Geo specific commands that must be handled.
+F00:0091       	cp   1  ; command 1: Slot Switch
+               S06:0000006D:  FE 01
+F00:0092       	jp   Z,command01_Setup
+               S06:0000006F:  CA 69 01
+F00:0093       	cp   3  ; command 3: Soft Reset
+               S06:00000072:  FE 03
+F00:0094       	jp   Z,command03_Setup
+               S06:00000074:  CA E3 01
+F00:0095       	; Check for command $00 (do nothing)
+F00:0096       	or   a
+               S06:00000077:  B7
+F00:0097       	jp   Z,NMI_end
+               S06:00000078:  CA AD 00
+F00:0098       	
+F00:0099       	;We need to reserve values <64 for system functions, so our commands are >128
+F00:0100       	;so we split our chibisound command into two nibbles!
+F00:0101       
+F00:0102       	;CC--DDDD	C=Command D=Data
+F00:0103       	
+F00:0104       	;10--DDDD	DDDD = Low Nibble
+F00:0105       	;11--DDDD	DDDD = High Nibble... and play sound!
+F00:0106       	
+F00:0107       	cp 128
+               S06:0000007B:  FE 80
+F00:0108       	jp c,NotChibiSound
+               S06:0000007D:  DA A8 00
+F00:0109       	
+F00:0110       	and %11000000
+               S06:00000080:  E6 C0
+F00:0111       	cp  %10000000
+               S06:00000082:  FE 80
+F00:0112       	jr z,ChibiFirst
+               S06:00000084:  28 12
+F00:0113       ChibiSecond:
+F00:0114       	ld a,b
+               S06:00000086:  78
+F00:0115       	and %00001111
+               S06:00000087:  E6 0F
+F00:0116       	rrca
+               S06:00000089:  0F
+F00:0117       	rrca
+               S06:0000008A:  0F
+F00:0118       	rrca
+               S06:0000008B:  0F
+F00:0119       	rrca
+               S06:0000008C:  0F
+F00:0120       	ld b,a
+               S06:0000008D:  47
+F00:0121       	ld a,(ChibiSoundTemp)
+               S06:0000008E:  3A 02 F8
+F00:0122       	or b
+               S06:00000091:  B0
+F00:0123       	call ChibiSound	
+               S06:00000092:  CD FD 01
+F00:0124       	
+F00:0125       	
+F00:0126       	jp NotChibiSound
+               S06:00000095:  C3 A8 00
+F00:0127       ChibiFirst:
+F00:0128       	ld a,b
+               S06:00000098:  78
+F00:0129       	and %00001111
+               S06:00000099:  E6 0F
+F00:0130       	ld (ChibiSoundTemp),a
+               S06:0000009B:  32 02 F8
+F00:0131       ChibiSoundDone:		
+F00:0132       	ld a,255
+               S06:0000009E:  3E FF
+F00:0133       	out  (0xC),a ; Reply to the 68K with 0.
+               S06:000000A0:  D3 0C
+F00:0134       	xor  a
+               S06:000000A2:  AF
+F00:0135       	out  (0),a ; Clear the sound code by writing to port 0
+               S06:000000A3:  D3 00
+F00:0136       	jp NMI_end
+               S06:000000A5:  C3 AD 00
+F00:0137       
+F00:0138       
+F00:0139       NotChibiSound:	
+F00:0140       	
+F00:0141       	; If it isn't any of the above commands, do nothing.
+F00:0142       
+F00:0143       	xor  a
+               S06:000000A8:  AF
+F00:0144       	out  (0xC),a ; Reply to the 68K with 0.
+               S06:000000A9:  D3 0C
+F00:0145       	out  (0),a ; Clear the sound code by writing to port 0
+               S06:000000AB:  D3 00
+F00:0146       
+F00:0147       NMI_end:
+F00:0148       	; restore register state
+F00:0149       	pop  hl
+               S06:000000AD:  E1
+F00:0150       	pop  de
+               S06:000000AE:  D1
+F00:0151       	pop  bc
+               S06:000000AF:  C1
+F00:0152       	pop  af
+               S06:000000B0:  F1
+F00:0153       	retn
+               S06:000000B1:  ED 45
+F00:0154       
+F00:0155       ;==============================================================================;
+F00:0156       ; Real IRQ code
+F00:0157       IRQ:
+F00:0158       	; save register state
+F00:0159       	push af
+               S06:000000B3:  F5
+F00:0160       	push bc
+               S06:000000B4:  C5
+F00:0161       	push de
+               S06:000000B5:  D5
+F00:0162       	push hl
+               S06:000000B6:  E5
+F00:0163       	push ix
+               S06:000000B7:  DD E5
+F00:0164       	push iy
+               S06:000000B9:  FD E5
+F00:0165       
+F00:0166       	; save internal status copies
+F00:0167       	in   a,(6)
+               S06:000000BB:  DB 06
+F00:0168       	ld   (intStatus1),a
+               S06:000000BD:  32 01 F8
+F00:0169       
+F00:0170       	in   a,(4)
+               S06:000000C0:  DB 04
+F00:0171       	ld   (intStatus0),a
+               S06:000000C2:  32 00 F8
+F00:0172       
+F00:0173       .IRQ_end:
+F00:0174       	; restore register state
+F00:0175       	pop  iy
+               S06:000000C5:  FD E1
+F00:0176       	pop  ix
+               S06:000000C7:  DD E1
+F00:0177       	pop  hl
+               S06:000000C9:  E1
+F00:0178       	pop  de
+               S06:000000CA:  D1
+F00:0179       	pop  bc
+               S06:000000CB:  C1
+F00:0180       	pop  af
+               S06:000000CC:  F1
+F00:0181       
+F00:0182       	; enable interrupts and return
+F00:0183       	ei
+               S06:000000CD:  FB
+F00:0184       	ret
+               S06:000000CE:  C9
+F00:0185       
+F00:0186       ;==============================================================================;
+F00:0187       ; EntryPoint
+F00:0188       ; The entry point of the sound driver. Sets up the working conditions.
+F00:0189       
+F00:0190       EntryPoint:
+F00:0191       	ld   sp,0xFFFC  ; set the stack pointer to $FFFC ($FFFD-$FFFE is used elsewhere)
+               S06:000000CF:  31 FC FF
+F00:0192       	im   1          ; set interrupt mode 1 (IRQ at $0038)
+               S06:000000D2:  ED 56
+F00:0193       
+F00:0194       	; clear RAM at $F800-$FFFF
+F00:0195       	xor  a ; set A = 0
+               S06:000000D4:  AF
+F00:0196       	ld   (0xF800),a ; write 0 to $F800
+               S06:000000D5:  32 00 F8
+F00:0197       	ld   hl,0xF800  ; load $F800 (value to write) into hl
+               S06:000000D8:  21 00 F8
+F00:0198       	ld   de,0xF801  ; load $F801 (beginning address) into de
+               S06:000000DB:  11 01 F8
+F00:0199       	ld   bc,0x7FF   ; load $07FF (loop length) into bc
+               S06:000000DE:  01 FF 07
+F00:0200       	ldir            ; write value from hl to address in de, increment de, decrement bc
+               S06:000000E1:  ED B0
+F00:0201       
+F00:0202       	; stop and/or silence audio channels
+F00:0203       	call ssg_Stop
+               S06:000000E3:  CD 42 01
+F00:0204       	call fm_Stop
+               S06:000000E6:  CD 25 01
+F00:0205       	call pcma_Stop
+               S06:000000E9:  CD 55 01
+F00:0206       	call pcmb_Stop
+               S06:000000EC:  CD 5D 01
+F00:0207       
+F00:0208       	; Write 1 to port $C0
+F00:0209       	; (Unsure of the purpose, but every working sound driver has this.)
+F00:0210       	ld   a,1
+               S06:000000EF:  3E 01
+F00:0211       	out  (0xC0),a
+               S06:000000F1:  D3 C0
+F00:0212       
+F00:0213       	; set up the default banks (typically for CD)
+F00:0214       	call SetDefaultBanks
+               S06:000000F3:  CD 14 01
+F00:0215       
+F00:0216       	ld   a,1
+               S06:000000F6:  3E 01
+F00:0217       	out  (8),a ; enable NMI on the YM2610 side
+               S06:000000F8:  D3 08
+F00:0218       	ei ; enable interrupts on the Z80 side
+               S06:000000FA:  FB
+F00:0219       
+F00:0220       ; execution falls through
+F00:0221       ;------------------------------------------------------------------------------;
+F00:0222       ; MainLoop
+F00:0223       ; The main loop of the sound driver. Does nothing.
+F00:0224       
+F00:0225       MainLoop:
+F00:0226       	; ;	  NVTTTTTT
+F00:0227       	; ld a,%01111111
+F00:0228       ; Again:
+F00:0229       	; push af
+F00:0230        
+F00:0231       	; ;call ChibiSound
+F00:0232       
+F00:0233       
+F00:0234       	; ld bc,&8000
+F00:0235       ; loop:
+F00:0236       	; dec bc
+F00:0237       	; ld a,b
+F00:0238       	; or c
+F00:0239       	; jr nz,loop
+F00:0240       
+F00:0241       
+F00:0242       
+F00:0243       	; pop af
+F00:0244       	; dec a
+F00:0245       	; jp Again
+F00:0246       
+F00:0247       
+F00:0248       	jp   MainLoop
+               S06:000000FB:  C3 FB 00
+F00:0249       
+F00:0250       ;==============================================================================;
+F00:0251       ; write45
+F00:0252       ; Writes data from the de register to ports 4 and 5.
+F00:0253       
+F00:0254       write45:
+F00:0255       	; save the previous value of af
+F00:0256       	push af
+               S06:000000FE:  F5
+F00:0257       
+F00:0258       	; the value in d is the address
+F00:0259       	ld   a,d
+               S06:000000FF:  7A
+F00:0260       	out  (4),a
+               S06:00000100:  D3 04
+F00:0261       	rst  8 ; wait for YM2610 to be free
+               S06:00000102:  CF
+F00:0262       
+F00:0263       	; the value in e is the data to write
+F00:0264       	ld   a,e
+               S06:00000103:  7B
+F00:0265       	out  (5),a
+               S06:00000104:  D3 05
+F00:0266       	rst  8 ; wait for YM2610 to be free
+               S06:00000106:  CF
+F00:0267       
+F00:0268       	; restore the value of af
+F00:0269       	pop  af
+               S06:00000107:  F1
+F00:0270       	ret
+               S06:00000108:  C9
+F00:0271       
+F00:0272       ;------------------------------------------------------------------------------;
+F00:0273       ; write67
+F00:0274       ; Writes data from the de register to ports 6 and 7.
+F00:0275       
+F00:0276       write67:
+F00:0277       	; save the previous value of af
+F00:0278       	push af
+               S06:00000109:  F5
+F00:0279       
+F00:0280       	; the value in d is the address
+F00:0281       	ld   a,d
+               S06:0000010A:  7A
+F00:0282       	out  (6),a
+               S06:0000010B:  D3 06
+F00:0283       	rst  8 ; wait for YM2610 to be free
+               S06:0000010D:  CF
+F00:0284       
+F00:0285       	; the value in e is the data to write
+F00:0286       	ld   a,e
+               S06:0000010E:  7B
+F00:0287       	out  (7),a
+               S06:0000010F:  D3 07
+F00:0288       	rst  8 ; wait for YM2610 to be free
+               S06:00000111:  CF
+F00:0289       
+F00:0290       	; restore the value of af
+F00:0291       	pop  af
+               S06:00000112:  F1
+F00:0292       	ret
+               S06:00000113:  C9
+F00:0293       
+F00:0294       ;==============================================================================;
+F00:0295       ; SetDefaultBanks
+F00:0296       ; Sets the default program banks.
+F00:0297       ; This setup treats the M1 ROM as linear space. (no bankswitching needed)
+F00:0298       
+F00:0299       SetDefaultBanks:
+F00:0300       	; Set $F000-$F7FF bank to bank $1E (30 *  2K)
+F00:0301       	ld   a,0x1E
+               S06:00000114:  3E 1E
+F00:0302       	in   a,(8)
+               S06:00000116:  DB 08
+F00:0303       
+F00:0304       	; Set $E000-$EFFF bank to bank $0E (14 *  4K)
+F00:0305       	ld   a,0x0E
+               S06:00000118:  3E 0E
+F00:0306       	in   a,(9)
+               S06:0000011A:  DB 09
+F00:0307       
+F00:0308       	; Set $C000-$DFFF bank to bank $06 ( 6 *  8K)
+F00:0309       	ld   a,0x06
+               S06:0000011C:  3E 06
+F00:0310       	in   a,(0xA)
+               S06:0000011E:  DB 0A
+F00:0311       
+F00:0312       	; Set $8000-$BFFF bank to bank $02 ( 2 * 16K)
+F00:0313       	ld   a,0x02
+               S06:00000120:  3E 02
+F00:0314       	in   a,(0xB)
+               S06:00000122:  DB 0B
+F00:0315       	ret
+               S06:00000124:  C9
+F00:0316       
+F00:0317       ;==============================================================================;
+F00:0318       ; fm_Stop
+F00:0319       ; Stops playback on all FM channels.
+F00:0320       
+F00:0321       fm_Stop:
+F00:0322       	di
+               S06:00000125:  F3
+F00:0323       	push af
+               S06:00000126:  F5
+F00:0324       	ld   a,0x28 ; Slot and Key On/Off
+               S06:00000127:  3E 28
+F00:0325       	out  (4),a ; write to port 4 (address 1)
+               S06:00000129:  D3 04
+F00:0326       	rst  8 ; wait for YM2610 to be free
+               S06:0000012B:  CF
+F00:0327       	;---------------------------------------------------;
+F00:0328       	ld   a,0x01 ; FM Channel 1
+               S06:0000012C:  3E 01
+F00:0329       	out  (5),a ; write to port 5 (data 1)
+               S06:0000012E:  D3 05
+F00:0330       	rst  8 ; wait for YM2610 to be free
+               S06:00000130:  CF
+F00:0331       	;---------------------------------------------------;
+F00:0332       	ld   a,0x02 ; FM Channel 2
+               S06:00000131:  3E 02
+F00:0333       	out  (5),a ; write to port 5 (data 1)
+               S06:00000133:  D3 05
+F00:0334       	rst  8 ; wait for YM2610 to be free
+               S06:00000135:  CF
+F00:0335       	;---------------------------------------------------;
+F00:0336       	ld   a,0x05 ; FM Channel 3
+               S06:00000136:  3E 05
+F00:0337       	out  (5),a ; write to port 5 (data 1)
+               S06:00000138:  D3 05
+F00:0338       	rst  8 ; wait for YM2610 to be free
+               S06:0000013A:  CF
+F00:0339       	;---------------------------------------------------;
+F00:0340       	ld   a,0x06 ; FM Channel 4
+               S06:0000013B:  3E 06
+F00:0341       	out  (5),a ; write to port 5 (data 1)
+               S06:0000013D:  D3 05
+F00:0342       	rst  8 ; wait for YM2610 to be free
+               S06:0000013F:  CF
+F00:0343       	pop  af
+               S06:00000140:  F1
+F00:0344       	ret
+               S06:00000141:  C9
+F00:0345       
+F00:0346       ;==============================================================================;
+F00:0347       ; ssg_Stop
+F00:0348       ; Silences all SSG channels.
+F00:0349       
+F00:0350       ssg_Stop:
+F00:0351       	ld   de,0x0800 ; SSG Channel A Volume/Mode
+               S06:00000142:  11 00 08
+F00:0352       	call write45   ; write to ports 4 and 5
+               S06:00000145:  CD FE 00
+F00:0353       	;-------------------------------------------------;
+F00:0354       	ld   de,0x0900 ; SSG Channel B Volume/Mode
+               S06:00000148:  11 00 09
+F00:0355       	call write45   ; write to ports 4 and 5
+               S06:0000014B:  CD FE 00
+F00:0356       	;-------------------------------------------------;
+F00:0357       	ld   de,0x0A00 ; SSG Channel C Volume/Mode
+               S06:0000014E:  11 00 0A
+F00:0358       	call write45   ; write to ports 4 and 5
+               S06:00000151:  CD FE 00
+F00:0359       	ret
+               S06:00000154:  C9
+F00:0360       
+F00:0361       ;==============================================================================;
+F00:0362       ; pcma_Stop
+F00:0363       ; Stops all ADPCM-A channels.
+F00:0364       
+F00:0365       pcma_Stop:
+F00:0366       	di
+               S06:00000155:  F3
+F00:0367       	ld   de,0x009F ; $009F Dump all ADPCM-A channels (stop sound)
+               S06:00000156:  11 9F 00
+F00:0368       	call write67
+               S06:00000159:  CD 09 01
+F00:0369       	ret
+               S06:0000015C:  C9
+F00:0370       
+F00:0371       ;==============================================================================;
+F00:0372       ; pcmb_Stop
+F00:0373       ; Stops the ADPCM-B channel.
+F00:0374       
+F00:0375       pcmb_Stop:
+F00:0376       	di
+               S06:0000015D:  F3
+F00:0377       	ld   de,0x1001 ; $1001 Force stop synthesis
+               S06:0000015E:  11 01 10
+F00:0378       	call write45
+               S06:00000161:  CD FE 00
+F00:0379       	dec  e ; $1000 Stop ADPCM-B output
+               S06:00000164:  1D
+F00:0380       	call write45
+               S06:00000165:  CD FE 00
+F00:0381       	ret
+               S06:00000168:  C9
+F00:0382       
+F00:0383       ;==============================================================================;
+F00:0384       ; command01_Setup
+F00:0385       ; Handles the setup for calling command $01.
+F00:0386       
+F00:0387       command01_Setup:
+F00:0388       	xor  a
+               S06:00000169:  AF
+F00:0389       	out  (0xC),a
+               S06:0000016A:  D3 0C
+F00:0390       	out  (0),a
+               S06:0000016C:  D3 00
+F00:0391       	ld   sp,0xFFFC
+               S06:0000016E:  31 FC FF
+F00:0392       
+F00:0393       	; set up Command $01's address on the stack
+F00:0394       	ld   hl,command_01
+               S06:00000171:  21 77 01
+F00:0395       	push hl
+               S06:00000174:  E5
+F00:0396       	retn
+               S06:00000175:  ED 45
+F00:0397       	; execution continues at command_01
+F00:0398       
+F00:0399       ;==============================================================================;
+F00:0400       ; command_01
+F00:0401       ; Slot switch.
+F00:0402       
+F00:0403       command_01:
+F00:0404       	di
+               S06:00000177:  F3
+F00:0405       	xor  a
+               S06:00000178:  AF
+F00:0406       	out  (0xC),a
+               S06:00000179:  D3 0C
+F00:0407       	out  (0),a
+               S06:0000017B:  D3 00
+F00:0408       
+F00:0409       	call SetDefaultBanks
+               S06:0000017D:  CD 14 01
+F00:0410       
+F00:0411       	; [FM] Turn off Left/Right output (and AM/PM Sense)
+F00:0412       	ld   de,0xB500
+               S06:00000180:  11 00 B5
+F00:0413       	call write45
+               S06:00000183:  CD FE 00
+F00:0414       	call write67
+               S06:00000186:  CD 09 01
+F00:0415       	ld   de,0xBb00
+               S06:00000189:  11 00 BB
+F00:0416       	call write45
+               S06:0000018C:  CD FE 00
+F00:0417       	call write67
+               S06:0000018F:  CD 09 01
+F00:0418       
+F00:0419       	; [ADPCM-A, ADPCM-B] reset ADPCM channels
+F00:0420       	ld   de,0x00BF ; $00BF: ADPCM-A dump flag = 1, all channels = 1
+               S06:00000192:  11 BF 00
+F00:0421       	call write67
+               S06:00000195:  CD 09 01
+F00:0422       	ld   de,0x1001 ; $1001: ADPCM-B reset flag = 1
+               S06:00000198:  11 01 10
+F00:0423       	call write45
+               S06:0000019B:  CD FE 00
+F00:0424       
+F00:0425       	; [ADPCM-A, ADPCM-B] poke ADPCM channel flags
+F00:0426       	ld   de,0x1CBF ; $1CBF: Reset flags for ADPCM-A 1-6 and ADPCM-B
+               S06:0000019E:  11 BF 1C
+F00:0427       	call write45
+               S06:000001A1:  CD FE 00
+F00:0428       	ld   de,0x1C00 ; $1C00: Enable flags for ADPCM-A 1-6 and ADPCM-B
+               S06:000001A4:  11 00 1C
+F00:0429       	call write45
+               S06:000001A7:  CD FE 00
+F00:0430       
+F00:0431       	; silence FM channels
+F00:0432       	ld   de,0x2801 ; FM channel 1 (1/4)
+               S06:000001AA:  11 01 28
+F00:0433       	call write45
+               S06:000001AD:  CD FE 00
+F00:0434       	ld   de,0x2802 ; FM channel 2 (2/4)
+               S06:000001B0:  11 02 28
+F00:0435       	call write45
+               S06:000001B3:  CD FE 00
+F00:0436       	ld   de,0x2805 ; FM channel 5 (3/4)
+               S06:000001B6:  11 05 28
+F00:0437       	call write45
+               S06:000001B9:  CD FE 00
+F00:0438       	ld   de,0x2806 ; FM channel 6 (4/4)
+               S06:000001BC:  11 06 28
+F00:0439       	call write45
+               S06:000001BF:  CD FE 00
+F00:0440       
+F00:0441       	; silence SSG channels
+F00:0442       	ld   de,0x800 ; SSG Channel A
+               S06:000001C2:  11 00 08
+F00:0443       	call write45
+               S06:000001C5:  CD FE 00
+F00:0444       	ld   de,0x900 ; SSG Channel B
+               S06:000001C8:  11 00 09
+F00:0445       	call write45
+               S06:000001CB:  CD FE 00
+F00:0446       	ld   de,0xA00 ; SSG Channel C
+               S06:000001CE:  11 00 0A
+F00:0447       	call write45
+               S06:000001D1:  CD FE 00
+F00:0448       
+F00:0449       	; set up infinite loop at the end of RAM.
+F00:0450       	ld   hl,0xFFFD
+               S06:000001D4:  21 FD FF
+F00:0451       	ld   (hl),0xC3 ; Set 0xFFFD = 0xC3 ($C3 is opcode for "jp")
+               S06:000001D7:  36 C3
+F00:0452       	ld   (0xFFFE),hl ; Set 0xFFFE = 0xFFFD (making "jp $FFFD")
+               S06:000001D9:  22 FE FF
+F00:0453       	ld   a,1
+               S06:000001DC:  3E 01
+F00:0454       	out  (0xC),a ; Write 1 to port 0xC (Reply to 68K)
+               S06:000001DE:  D3 0C
+F00:0455       	jp   0xFFFD ; jump to infinite loop in RAM
+               S06:000001E0:  C3 FD FF
+F00:0456       
+F00:0457       ;==============================================================================;
+F00:0458       ; command03_Setup
+F00:0459       ; Handles the setup for calling command $03.
+F00:0460       
+F00:0461       command03_Setup:
+F00:0462       	xor  a
+               S06:000001E3:  AF
+F00:0463       	out  (0xC),a
+               S06:000001E4:  D3 0C
+F00:0464       	out  (0),a
+               S06:000001E6:  D3 00
+F00:0465       	ld   sp,0xFFFC
+               S06:000001E8:  31 FC FF
+F00:0466       
+F00:0467       	; set up Command $03's address on the stack
+F00:0468       	ld   hl,command_03
+               S06:000001EB:  21 F1 01
+F00:0469       	push hl
+               S06:000001EE:  E5
+F00:0470       	retn
+               S06:000001EF:  ED 45
+F00:0471       	; execution continues at command_03
+F00:0472       
+F00:0473       ;==============================================================================;
+F00:0474       ; command_03
+F00:0475       ; Handles a soft reset.
+F00:0476       
+F00:0477       command_03:
+F00:0478       	di
+               S06:000001F1:  F3
+F00:0479       	xor  a
+               S06:000001F2:  AF
+F00:0480       	out  (0xC),a
+               S06:000001F3:  D3 0C
+F00:0481       	out  (0),a
+               S06:000001F5:  D3 00
+F00:0482       	ld   sp,0xFFFF
+               S06:000001F7:  31 FF FF
+F00:0483       	jp   Start
+               S06:000001FA:  C3 00 00
+F00:0484       
+F00:0485       	include "\SrcNEO\NEO-Z80_V1_ChibiSound.asm"
+F01:0001       ChibiSound:			;NVVTTTTT	Noise Volume Tone 
+F01:0002       	or a
+               S06:000001FD:  B7
+F01:0003       	jr z,silent		;Zero turns off sound
+               S06:000001FE:  28 47
+F01:0004       	
+F01:0005       	ld h,a			;Back up A
+               S06:00000200:  67
+F01:0006       	and %00000111	;Rotate lowest 3 bits from -----XXX
+               S06:00000201:  E6 07
+F01:0007       	rrca
+               S06:00000203:  0F
+F01:0008       	rrca
+               S06:00000204:  0F
+F01:0009       	rrca
+               S06:00000205:  0F
+F01:0010       	or %00011111	;convert 11100000 to 11111111
+               S06:00000206:  F6 1F
+F01:0011       	ld c,a
+               S06:00000208:  4F
+F01:0012       	ld a,0			;TTTTTTTT Tone Lower 8 bits	A
+               S06:00000209:  3E 00
+F01:0013       	call AYRegWrite
+               S06:0000020B:  CD 4F 02
+F01:0014       
+F01:0015       	ld a,h
+               S06:0000020E:  7C
+F01:0016       	and %00111000	;Get upper bits of tone
+               S06:0000020F:  E6 38
+F01:0017       	rrca
+               S06:00000211:  0F
+F01:0018       	rrca
+               S06:00000212:  0F
+F01:0019       	rrca
+               S06:00000213:  0F
+F01:0020       	ld c,a
+               S06:00000214:  4F
+F01:0021       	ld a,1			;----TTTT Tone Upper 4 bits
+               S06:00000215:  3E 01
+F01:0022       	call AYRegWrite
+               S06:00000217:  CD 4F 02
+F01:0023       	
+F01:0024       	bit 7,h			;Noise bit N-------
+               S06:0000021A:  CB 7C
+F01:0025       	jr z,AYNoNoise
+               S06:0000021C:  28 10
+F01:0026       
+F01:0027       	ld a,7			;Mixer  --NNNTTT (1=off) --CBACBA
+               S06:0000021E:  3E 07
+F01:0028       	ld c,%00110110
+               S06:00000220:  0E 36
+F01:0029       	call AYRegWrite
+               S06:00000222:  CD 4F 02
+F01:0030       
+F01:0031       	ld a,6			;Noise ---NNNNN
+               S06:00000225:  3E 06
+F01:0032       	ld c,%00011111
+               S06:00000227:  0E 1F
+F01:0033       	call AYRegWrite
+               S06:00000229:  CD 4F 02
+F01:0034       
+F01:0035       	jr AYMakeTone
+               S06:0000022C:  18 09
+F01:0036       AYNoNoise:
+F01:0037       	ld a,7			;Mixer  --NNNTTT (1=off) --CBACBA
+               S06:0000022E:  3E 07
+F01:0038       	ld c,%00111110
+               S06:00000230:  0E 3E
+F01:0039       	call AYRegWrite
+               S06:00000232:  CD 4F 02
+F01:0040       	jr AYMakeTone
+               S06:00000235:  18 00
+F01:0041       AYMakeTone:
+F01:0042       ;*** these are incorrectly marked as Amplitude Control (Reg R10,R11,R12) in some documentation! ***
+F01:0043       	ld a,h
+               S06:00000237:  7C
+F01:0044       	and %01000000	;-V------ = Volume bit
+               S06:00000238:  E6 40
+F01:0045       	rrca
+               S06:0000023A:  0F
+F01:0046       	rrca
+               S06:0000023B:  0F
+F01:0047       	rrca
+               S06:0000023C:  0F
+F01:0048       	rrca
+               S06:0000023D:  0F
+F01:0049       	or  %00001011	;Shift the high volume bit into position
+               S06:0000023E:  F6 0B
+F01:0050       	ld c,a
+               S06:00000240:  4F
+F01:0051       	ld a,8			;4-bit Volume / 2-bit Envelope Select for channel A ---EVVVV
+               S06:00000241:  3E 08
+F01:0052       	call AYRegWrite
+               S06:00000243:  CD 4F 02
+F01:0053       	ret
+               S06:00000246:  C9
+F01:0054       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F01:0055       silent:
+F01:0056       	ld a,7		;Mixer  --NNNTTT (1=off) --CBACBA
+               S06:00000247:  3E 07
+F01:0057       	ld c,%00111111
+               S06:00000249:  0E 3F
+F01:0058       	call AYRegWrite
+               S06:0000024B:  CD 4F 02
+F01:0059       
+F01:0060       	ret
+               S06:0000024E:  C9
+F01:0061       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F01:0062       AYRegWrite:
+F01:0063       	out (4),a	;regnum
+               S06:0000024F:  D3 04
+F01:0064       	ld a,c
+               S06:00000251:  79
+F01:0065       	out (5),a	;value
+               S06:00000252:  D3 05
+F01:0066       	ret
+               S06:00000254:  C9
+F01:0067       	
+F01:0068       
+F01:0069       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0486       ; RAM defines for Dummy Z80 sound driver
+F00:0487       ;==============================================================================;
+F00:0488       	org $F800
+F00:0489       ;==============================================================================;
+F00:0490       intStatus0: ds 1 ; internal Status 0 copy
+F00:0491       intStatus1: ds 1 ; internal Status 1 copy
+F00:0492       ChibiSoundTemp:ds 1
+F00:0493       
+
+
+Sections:
+S01  seg0
+S02  seg8
+S03  seg10
+S04  seg18
+S05  seg38
+S06  seg66
+S07  segf800
+
+
+Sources:
+F00  NeoGeoZ80Sound.asm
+F01  \SrcNEO\NEO-Z80_V1_ChibiSound.asm
+
+
+Symbols:
+AYMakeTone EXPR(567=0x237) ABS 
+AYNoNoise EXPR(558=0x22e) ABS 
+AYRegWrite EXPR(591=0x24f) ABS 
+silent EXPR(583=0x247) ABS 
+command_03 EXPR(497=0x1f1) ABS 
+command_01 EXPR(375=0x177) ABS 
+MainLoop EXPR(251=0xfb) ABS 
+SetDefaultBanks EXPR(276=0x114) ABS 
+pcmb_Stop EXPR(349=0x15d) ABS 
+pcma_Stop EXPR(341=0x155) ABS 
+fm_Stop EXPR(293=0x125) ABS 
+ssg_Stop EXPR(322=0x142) ABS 
+ IRQ IRQ_end EXPR(197=0xc5) UNUSED ABS 
+intStatus0 EXPR(63488=0xf800) ABS 
+intStatus1 EXPR(63489=0xf801) ABS 
+ChibiSoundDone EXPR(158=0x9e) UNUSED ABS 
+ChibiSound EXPR(509=0x1fd) ABS 
+ChibiSoundTemp EXPR(63490=0xf802) ABS 
+ChibiSecond EXPR(134=0x86) UNUSED ABS 
+ChibiFirst EXPR(152=0x98) ABS 
+NotChibiSound EXPR(168=0xa8) ABS 
+NMI_end EXPR(173=0xad) ABS 
+command03_Setup EXPR(483=0x1e3) ABS 
+command01_Setup EXPR(361=0x169) ABS 
+NMI EXPR(102=0x66) UNUSED ABS 
+IRQ EXPR(179=0xb3) ABS 
+j_IRQ EXPR(56=0x38) UNUSED ABS 
+write67 EXPR(265=0x109) ABS 
+j_write67 EXPR(24=0x18) UNUSED ABS 
+write45 EXPR(254=0xfe) ABS 
+j_write45 EXPR(16=0x10) UNUSED ABS 
+CheckBusyFlag EXPR(8=0x8) ABS 
+EntryPoint EXPR(207=0xcf) ABS 
+Start EXPR(0=0x0) ABS 
+__RPTCNT EXPR(-1=0xffff) INTERNAL 
+__VASM EXPR(0=0x0) INTERNAL 
+BuildCPC EXPR(1=0x1) UNUSED 
+vasm EXPR(1=0x1) UNUSED 
+
+There have been no errors.

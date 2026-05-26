@@ -1,0 +1,153 @@
+F00:0001       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+F00:0002       	;Console INIT
+F00:0003       		
+F00:0004       	SECTION TEXT		;CODE Section
+F00:0005       	
+F00:0006       	lea dosname,a1 		;'dos.library' defined in chip ram
+               S01:00000000:  43 FA 00 84
+F00:0007       	moveq.l	#0,d0		;Version
+               S01:00000004:  70 00
+F00:0008       	move.l	$4,a6		;Load base for call from addr $4
+               S01:00000006:  2C 78 00 04
+F00:0009       	jsr	(-552,a6)		;Exec - Openlibrary - return DosBase in D0
+               S01:0000000A:  4E AE FD D8
+F00:0010       	
+F00:0011       	move.l d0,(DosHandle);Save DOS Base to handle name
+               S01:0000000E:  23 C0 00 00 00 00 [R]
+F00:0012       	
+F00:0013       	move.l d0,a6		;Dos base
+               S01:00000014:  2C 40
+F00:0014       	move.l #consolename,d1;'CONSOLE:'
+               S01:00000016:  22 3C 00 00 00 92 [R]
+F00:0015       	move.l #1005,d2		;ModeOld
+               S01:0000001C:  24 3C 00 00 03 ED
+F00:0016       	jsr	(-30,a6)		;Dos: Open (D0=Console Handle)
+               S01:00000022:  4E AE FF E2
+F00:0017       
+F00:0018       	move.l d0,(ConsoleHandle)	;Save Console Handle
+               S01:00000026:  23 C0 00 00 00 04 [R]
+F00:0019       	
+F00:0020       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+F00:0021       	;Program Starts here
+F00:0022       	
+F00:0023       	lea Message,a3
+               S01:0000002C:  47 FA 00 08
+F00:0024       	jsr PrintString		;Show String Message
+               S01:00000030:  61 38
+F00:0025       
+F00:0026       	jsr NewLine			;Start a new line	
+               S01:00000032:  61 44
+F00:0027       	
+F00:0028       	rts					;Return to OS
+               S01:00000034:  4E 75
+F00:0029       	;jmp *				;Halt Program
+F00:0030       	
+F00:0031       Message:    dc.b 'Hello World',255
+               S01:00000036:  48 65 6C 6C 6F 20 57 6F 72 6C 64
+               S01:00000041:  FF
+F00:0032       	even
+F00:0033       
+F00:0034       PrintChar:
+F00:0035       	moveM.l d0-d3/a0,-(sp)
+               S01:00000042:  48 E7 F0 80
+F00:0036       		move.b d0,(CharBuffer)		;Save character into buffer
+               S01:00000046:  13 C0 00 00 00 08 [R]
+F00:0037       		
+F00:0038       		move.l (doshandle),a0		;Dos Handle
+               S01:0000004C:  20 79 00 00 00 00 [R]
+F00:0039       		move.l (consolehandle),d1	;Console handle
+               S01:00000052:  22 39 00 00 00 04 [R]
+F00:0040       		move.l #CharBuffer,d2		;Dosbase in a6
+               S01:00000058:  24 3C 00 00 00 08 [R]
+F00:0041       		move.l #1,d3				;buffer length (1 byte)
+               S01:0000005E:  76 01
+F00:0042       		jsr	(-48,a0)				;Call "Dos: Write"
+               S01:00000060:  4E A8 FF D0
+F00:0043       		
+F00:0044       	moveM.l (sp)+,d0-d3/a0
+               S01:00000064:  4C DF 01 0F
+F00:0045       	rts
+               S01:00000068:  4E 75
+F00:0046       	
+F00:0047       
+F00:0048       
+F00:0049       PrintString:
+F00:0050       	move.b (a3)+,d0		;Read a character in from A3
+               S01:0000006A:  10 1B
+F00:0051       	cmp.b #255,d0
+               S01:0000006C:  B0 3C 00 FF
+F00:0052       	beq PrintString_Done;return on 255
+               S01:00000070:  67 04
+F00:0053       	jsr PrintChar		;Print the Character
+               S01:00000072:  61 CE
+F00:0054       	bra PrintString
+               S01:00000074:  60 F4
+F00:0055       PrintString_Done:		
+F00:0056       	rts
+               S01:00000076:  4E 75
+F00:0057       
+F00:0058       NewLine:
+F00:0059       	move.b #$0D,d0		;Char 13 CR
+               S01:00000078:  10 3C 00 0D
+F00:0060       	jsr PrintChar
+               S01:0000007C:  61 C4
+F00:0061       	move.b #$0A,d0		;Char 10 LF
+               S01:0000007E:  10 3C 00 0A
+F00:0062       	jsr PrintChar
+               S01:00000082:  61 BE
+F00:0063       	rts
+               S01:00000084:  4E 75
+F00:0064       	
+F00:0065       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+F00:0066       	
+F00:0067       dosname: 		dc.b 'dos.library',0	;Library name
+               S01:00000086:  64 6F 73 2E 6C 69 62 72 61 72 79
+               S01:00000091:  00
+F00:0068       consolename:  	dc.b  'CONSOLE:',0		;Console handle
+               S01:00000092:  43 4F 4E 53 4F 4C 45 3A
+               S01:0000009A:  00
+F00:0069       
+F00:0070       	even
+F00:0071       
+F00:0072       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+F00:0073       	;Chip Ram
+F00:0074       		
+F00:0075       	Section ChipRAM,Data_c	;Request 'Chip Ram' area memory 
+F00:0076       								
+F00:0077       DosHandle: 		dc.l 0			;Dos Handle
+               S02:00000000:  00 00 00 00
+F00:0078       ConsoleHandle: 	dc.l 0			;Console Handle
+               S02:00000004:  00 00 00 00
+F00:0079       CharBuffer: 	dc.b 0			;Character we want to print
+               S02:00000008:  00
+
+
+Sections:
+S01  TEXT
+S02  ChipRAM
+
+
+Sources:
+F00  AMI_HelloWorld.asm
+
+
+Symbols:
+PrintString_Done LAB (0x76) sec=TEXT 
+CharBuffer LAB (0x8) REF sec=ChipRAM 
+PrintChar LAB (0x42) sec=TEXT 
+NewLine LAB (0x78) sec=TEXT 
+PrintString LAB (0x6a) sec=TEXT 
+Message LAB (0x36) sec=TEXT 
+ConsoleHandle LAB (0x4) REF sec=ChipRAM 
+consolename LAB (0x92) REF sec=TEXT 
+DosHandle LAB (0x0) REF sec=ChipRAM 
+dosname LAB (0x86) sec=TEXT 
+__LINE__ EXPR(79=0x0) INTERNAL 
+__FO EXPR(0=0x0) INTERNAL 
+__RS EXPR(0=0x0) INTERNAL 
+REPTN EXPR(-1=0xffffffff) INTERNAL 
+__VASM EXPR(1=0x0) INTERNAL 
+BuildAMI EXPR(1=0x0) UNUSED 
+vasm EXPR(1=0x0) UNUSED 
+
+There have been no errors.

@@ -1,0 +1,787 @@
+F00:0001       	include "\SrcALL\BasicMacros.asm"
+F01:0001       ;A	d0
+F01:0002       ;BC D1,D4	A1
+F01:0003       ;DE	D2,D5	A2
+F01:0004       ;HL D3,D6	A3
+F01:0005       
+F01:0006       ;IX			A4
+F01:0007       ;IY			A5
+F01:0008       
+F01:0009       	macro PushBc
+F01:0013       
+F01:0014       	
+F01:0015       	macro PopBc
+F01:0019       
+F01:0020       	
+F01:0021       	macro PushDe
+F01:0025       
+F01:0026       	
+F01:0027       	macro PopDe
+F01:0031       
+F01:0032       	
+F01:0033       	macro PushHl
+F01:0038       
+F01:0039       	
+F01:0040       	macro PopHl
+F01:0045       
+F01:0046       	
+F01:0047       	macro PushIX
+F01:0049       
+F01:0050       	
+F01:0051       	macro PopIX
+F01:0053       
+F01:0054       	
+F01:0055       	
+F01:0056       	macro PushIY
+F01:0058       
+F01:0059       	
+F01:0060       	macro PopIY
+F01:0062       
+F01:0063       	
+F01:0064       	
+F01:0065       	macro PushAf
+F01:0068       
+F01:0069       	
+F01:0070       	macro PopAf
+F01:0072       
+F01:0073       	
+F01:0074       	
+F01:0075       	macro PushAll
+F01:0077       
+F01:0078       	macro PopAll
+F01:0080       
+F00:0002       
+F00:0003       
+F00:0004       ;Ram Variables
+F00:0005       Cursor_X equ $00FF0000		;Ram for Cursor Xpos
+F00:0006       Cursor_Y equ $00FF0000+1	;Ram for Cursor Ypos
+F00:0007       
+F00:0008       ;Video Ports
+F00:0009       VDP_data	EQU	$C00000	; VDP data, R/W word or longword access only
+F00:0010       VDP_ctrl	EQU	$C00004	; VDP control, word or longword writes only
+F00:0011       
+F00:0012       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0013       ;					Program Start
+F00:0014       	;org $00FF0000-$200
+F00:0015       	org $00200000-$200
+F00:0016       	
+F00:0017       	
+F00:0018       	;incbin "X:\BldGEN\template_E.iso"	;Eur
+F00:0019       	incbin "X:\BldGEN\template_J.iso"	;Jpn
+               S01:001FFE00:  53 45 47 41 44 49 53 43 53 59 53 54 45 4D 20 20
+               S01:001FFE10:  43 48 49 42 49 41 4B 55 4D 41 53 00 00 00 00 01
+F00:0020       	;incbin "X:\BldGEN\template_U.iso"	;USA
+F00:0021       	
+F00:0022       	nop
+               S01:00200584:  4E 71
+F00:0023       	
+F00:0024       ProgramStart:
+F00:0025       	;initialize TMSS (TradeMark Security System)
+F00:0026       	move.b ($A10001),D0		;A10001 test the hardware version
+               S01:00200586:  10 39 00 A1 00 01
+F00:0027       	and.b #$0F,D0
+               S01:0020058C:  C0 3C 00 0F
+F00:0028       	beq	NoTmss				;branch if no TMSS chip
+               S01:00200590:  67 0A
+F00:0029       	move.l #'SEGA',($A14000);A14000 disable TMSS 
+               S01:00200592:  23 FC 53 45 47 41 00 A1 40 00
+F00:0030       NoTmss:
+F00:0031       
+F00:0032       
+F00:0033       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0034       ;					Set Up Graphics
+F00:0035       
+F00:0036       	lea VDPSettings,A5		;Initialize Screen Registers
+               S01:0020059C:  4B FA 04 92
+F00:0037       	move.l #VDPSettingsEnd-VDPSettings,D1 ;length of Settings
+               S01:002005A0:  72 18
+F00:0038       	
+F00:0039       	move.w (VDP_ctrl),D0	;C00004 read VDP status (interrupt acknowledge?)
+               S01:002005A2:  30 39 00 C0 00 04
+F00:0040       	move.l #$00008000,d5	;VDP Reg command (%8rvv)
+               S01:002005A8:  2A 3C 00 00 80 00
+F00:0041       	
+F00:0042       NextInitByte:
+F00:0043       	move.b (A5)+,D5			;get next video control byte
+               S01:002005AE:  1A 1D
+F00:0044       	move.w D5,(VDP_ctrl)	;C00004 send write register command to VDP
+               S01:002005B0:  33 C5 00 C0 00 04
+F00:0045       		;   8RVV - R=Reg V=Value
+F00:0046       	add.w #$0100,D5			;point to next VDP register
+               S01:002005B6:  DA 7C 01 00
+F00:0047       	dbra D1,NextInitByte	;loop for rest of block
+               S01:002005BA:  51 C9 FF F2
+F00:0048       
+F00:0049       
+F00:0050       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0051       ;					Set up palette
+F00:0052       	
+F00:0053       	;Define palette
+F00:0054       	move.l #$C0000000,d0	;Color 0
+               S01:002005BE:  20 3C C0 00 00 00
+F00:0055       	move.l d0,VDP_Ctrl
+               S01:002005C4:  23 C0 00 C0 00 04
+F00:0056       	;        ----BBB-GGG-RRR-
+F00:0057       	move.w #%0000011000000000,VDP_data
+               S01:002005CA:  33 FC 06 00 00 C0 00 00
+F00:0058       			
+F00:0059       	move.l #$C0020000,d0	;Color 1
+               S01:002005D2:  20 3C C0 02 00 00
+F00:0060       	move.l d0,VDP_Ctrl
+               S01:002005D8:  23 C0 00 C0 00 04
+F00:0061       	move.w #%0000000011101110,VDP_data
+               S01:002005DE:  33 FC 00 EE 00 C0 00 00
+F00:0062       	
+F00:0063       	move.l #$C0040000,d0	;Color 2
+               S01:002005E6:  20 3C C0 04 00 00
+F00:0064       	move.l d0,VDP_Ctrl
+               S01:002005EC:  23 C0 00 C0 00 04
+F00:0065       	move.w #%0000111011100000,VDP_data
+               S01:002005F2:  33 FC 0E E0 00 C0 00 00
+F00:0066       	
+F00:0067       	move.l #$C0060000,d0	;Color 3
+               S01:002005FA:  20 3C C0 06 00 00
+F00:0068       	move.l d0,VDP_Ctrl
+               S01:00200600:  23 C0 00 C0 00 04
+F00:0069       	move.w #%0000000000001110,VDP_data
+               S01:00200606:  33 FC 00 0E 00 C0 00 00
+F00:0070       	
+F00:0071       	move.l #$C01E0000,d0	;Color 15 (Font)
+               S01:0020060E:  20 3C C0 1E 00 00
+F00:0072       	move.l d0,VDP_Ctrl
+               S01:00200614:  23 C0 00 C0 00 04
+F00:0073       	move.w #%0000000011101110,VDP_data
+               S01:0020061A:  33 FC 00 EE 00 C0 00 00
+F00:0074       	
+F00:0075       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0076       ;					Set up Font
+F00:0077       	lea Font,A1					 ;Font Address in ROM
+               S01:00200622:  43 FA 01 0C
+F00:0078       	move.l #Font_End-Font,d6	 ;Our font contains 96 letters 8 lines each
+               S01:00200626:  2C 3C 00 00 03 00
+F00:0079       	
+F00:0080       	move.l #$40000000,(VDP_Ctrl);Start writes to address $0000
+               S01:0020062C:  23 FC 40 00 00 00 00 C0 00 04
+F00:0081       								;(Patterns in Vram)
+F00:0082       NextFont:
+F00:0083       	move.b (A1)+,d0		;Get byte from font
+               S01:00200636:  10 19
+F00:0084       	moveq.l #7,d5		;Bit Count (8 bits)
+               S01:00200638:  7A 07
+F00:0085       	clr.l d1			;Reset BuildUp Byte
+               S01:0020063A:  72 00
+F00:0086       	
+F00:0087       Font_NextBit:			;1 color per nibble = 4 bytes
+F00:0088       
+F00:0089       	rol.l #3,d1			;Shift BuildUp 3 bits left
+               S01:0020063C:  E7 99
+F00:0090       	roxl.b #1,d0		;Shift a Bit from the 1bpp font into the Pattern
+               S01:0020063E:  E3 10
+F00:0091       	roxl.l #1,d1		;Shift bit into BuildUp
+               S01:00200640:  E3 91
+F00:0092       	dbra D5,Font_NextBit;Next Bit from Font
+               S01:00200642:  51 CD FF F8
+F00:0093       	
+F00:0094       	move.l d1,d0		; Make fontfrom Color 1 to color 15
+               S01:00200646:  20 01
+F00:0095       	rol.l #1,d1			;Bit 1
+               S01:00200648:  E3 99
+F00:0096       	or.l d0,d1
+               S01:0020064A:  82 80
+F00:0097       	rol.l #1,d1			;Bit 2
+               S01:0020064C:  E3 99
+F00:0098       	or.l d0,d1
+               S01:0020064E:  82 80
+F00:0099       	rol.l #1,d1			;Bit 3
+               S01:00200650:  E3 99
+F00:0100       	or.l d0,d1
+               S01:00200652:  82 80
+F00:0101       	
+F00:0102       	move.l d1,(VDP_Data);Write next Long of char (one line) to VDP
+               S01:00200654:  23 C1 00 C0 00 00
+F00:0103       	dbra d6,NextFont	;Loop until done
+               S01:0020065A:  51 CE FF DA
+F00:0104       
+F00:0105       	
+F00:0106       
+F00:0107       	clr.b Cursor_X			;Clear Cursor XY
+               S01:0020065E:  42 39 00 FF 00 00
+F00:0108       	clr.b Cursor_Y
+               S01:00200664:  42 39 00 FF 00 01
+F00:0109       	
+F00:0110       	;Turn on screen
+F00:0111       	move.w	#$8144,(VDP_Ctrl);C00004 reg 1 = 0x44 unblank display
+               S01:0020066A:  33 FC 81 44 00 C0 00 04
+F00:0112       	
+F00:0113       	
+F00:0114       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+F00:0115       	
+F00:0116       	lea Message,a3
+               S01:00200672:  47 FA 00 38
+F00:0117       	jsr PrintString		;Print String to screen
+               S01:00200676:  61 00 00 9C
+F00:0118       	
+F00:0119       	jsr NewLine			;Start a new line
+               S01:0020067A:  61 00 00 A6
+F00:0120       	move.l #$310000,d2
+               S01:0020067E:  24 3C 00 31 00 00
+F00:0121       	move.l #$100,d1
+               S01:00200684:  22 3C 00 00 01 00
+F00:0122       	
+F00:0123       	st d2
+               S01:0020068A:  50 C2
+F00:0124       	sf d3
+               S01:0020068C:  51 C3
+F00:0125       	move.w (Message,PC),d1
+               S01:0020068E:  32 3A 00 1C
+F00:0126       	jsr Monitor				;Show Registers
+               S01:00200692:  61 00 04 08
+F00:0127       
+F00:0128       
+F00:0129       	jsr Monitor_MemDump		;Dump 6 lines from  $00000000
+               S01:00200696:  61 00 04 A0
+F00:0130       	dc.l $00207DF0
+               S01:0020069A:  00 20 7D F0
+F00:0131       	dc.w $6
+               S01:0020069E:  00 06
+F00:0132       	jsr Monitor_MemDump		;Dump 6 lines from  $00000000
+               S01:002006A0:  61 00 04 96
+F00:0133       	dc.l $00FF7DF0
+               S01:002006A4:  00 FF 7D F0
+F00:0134       	dc.w $6
+               S01:002006A8:  00 06
+F00:0135       	
+F00:0136       	jmp *				;Halt CPU
+               S01:002006AA:  60 FE
+F00:0137       		
+F00:0138       
+F00:0139       Message: dc.b 'Hello World 123',255		
+               S01:002006AC:  48 65 6C 6C 6F 20 57 6F 72 6C 64 20 31 32 33
+               S01:002006BB:  FF
+F00:0140       	even
+F00:0141       
+F00:0142       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F00:0143       	
+F00:0144       PrintChar:				;Show D0 to screen
+F00:0145       	moveM.l d0-d7/a0-a7,-(sp)
+               S01:002006BC:  48 E7 FF FF
+F00:0146       		and.l #$FF,d0			;Keep only 1 byte
+               S01:002006C0:  C0 BC 00 00 00 FF
+F00:0147       		sub #32,d0				;No Characters in our font below 32
+               S01:002006C6:  90 7C 00 20
+F00:0148       PrintCharAlt:		
+F00:0149       		Move.L  #$40000003,d5	;top 4=write, bottom $3=Cxxx range
+               S01:002006CA:  2A 3C 40 00 00 03
+F00:0150       		clr.l d4					;Tilemap at $C000+
+               S01:002006D0:  78 00
+F00:0151       
+F00:0152       		Move.B (Cursor_Y),D4	
+               S01:002006D2:  18 39 00 FF 00 01
+F00:0153       		rol.L #8,D4				;move $-FFF to $-FFF----
+               S01:002006D8:  E1 9C
+F00:0154       		rol.L #8,D4
+               S01:002006DA:  E1 9C
+F00:0155       		rol.L #7,D4				;2 bytes per tile * 64 tiles per line
+               S01:002006DC:  EF 9C
+F00:0156       		add.L D4,D5				;add $4------3
+               S01:002006DE:  DA 84
+F00:0157       		
+F00:0158       		Move.B (Cursor_X),D4
+               S01:002006E0:  18 39 00 FF 00 00
+F00:0159       		rol.L #8,D4				;move $-FFF to $-FFF----
+               S01:002006E6:  E1 9C
+F00:0160       		rol.L #8,D4
+               S01:002006E8:  E1 9C
+F00:0161       		rol.L #1,D4				;2 bytes per tile
+               S01:002006EA:  E3 9C
+F00:0162       		add.L D4,D5				;add $4------3
+               S01:002006EC:  DA 84
+F00:0163       		
+F00:0164       		MOVE.L	D5,(VDP_ctrl)	; C00004 write next character to VDP
+               S01:002006EE:  23 C5 00 C0 00 04
+F00:0165       		MOVE.W	D0,(VDP_data)	; C00000 store next word of name data
+               S01:002006F4:  33 C0 00 C0 00 00
+F00:0166       
+F00:0167       		addq.b #1,(Cursor_X)	;INC Xpos
+               S01:002006FA:  52 39 00 FF 00 00
+F00:0168       		move.b (Cursor_X),d0
+               S01:00200700:  10 39 00 FF 00 00
+F00:0169       		cmp.b #39,d0
+               S01:00200706:  B0 3C 00 27
+F00:0170       		bls nextpixel_Xok
+               S01:0020070A:  63 02
+F00:0171       		jsr NewLine			;If we're at end of line, start newline
+               S01:0020070C:  61 14
+F00:0172       nextpixel_Xok:
+F00:0173       	moveM.l (sp)+,d0-d7/a0-a7
+               S01:0020070E:  4C DF FF FF
+F00:0174       	rts
+               S01:00200712:  4E 75
+F00:0175       	
+F00:0176       PrintString:
+F00:0177       		move.b (a3)+,d0			;Read a character in from A3
+               S01:00200714:  10 1B
+F00:0178       		cmp.b #255,d0
+               S01:00200716:  B0 3C 00 FF
+F00:0179       		beq PrintString_Done	;return on 255
+               S01:0020071A:  67 04
+F00:0180       		jsr PrintChar			;Print the Character
+               S01:0020071C:  61 9E
+F00:0181       		bra PrintString
+               S01:0020071E:  60 F4
+F00:0182       PrintString_Done:		
+F00:0183       	rts
+               S01:00200720:  4E 75
+F00:0184       	
+F00:0185       NewLine:
+F00:0186       	addq.b #1,(Cursor_Y)		;INC Y
+               S01:00200722:  52 39 00 FF 00 01
+F00:0187       	clr.b (Cursor_X)			;Zero X
+               S01:00200728:  42 39 00 FF 00 00
+F00:0188       	rts	
+               S01:0020072E:  4E 75
+F00:0189       	
+F00:0190       Font:							;1bpp font - 8x8 96 characters 
+F00:0191       	incbin "\ResALL\Font96.FNT"
+               S01:00200730:  00 00 00 00 00 00 00 00 10 18 18 18 18 00 18 00
+               S01:00200740:  28 6C 28 00 00 00 00 00 00 28 7C 28 7C 28 00 00
+F00:0192       Font_End:		
+F00:0193       
+F00:0194       VDPSettings:
+F00:0195       	DC.B $04 ; 0 mode register 1											---H-1M-
+               S01:00200A30:  04
+F00:0196       	DC.B $04 ; 1 mode register 2											-DVdP---
+               S01:00200A31:  04
+F00:0197       	DC.B $30 ; 2 name table base for scroll A (A=top 3 bits)				--AAA--- = $C000
+               S01:00200A32:  30
+F00:0198       	DC.B $3C ; 3 name table base for window (A=top 4 bits / 5 in H40 Mode)	--AAAAA- = $F000
+               S01:00200A33:  3C
+F00:0199       	DC.B $07 ; 4 name table base for scroll B (A=top 3 bits)				-----AAA = $E000
+               S01:00200A34:  07
+F00:0200       	DC.B $6C ; 5 sprite attribute table base (A=top 7 bits / 6 in H40)		-AAAAAAA = $D800
+               S01:00200A35:  6C
+F00:0201       	DC.B $00 ; 6 unused register											--------
+               S01:00200A36:  00
+F00:0202       	DC.B $00 ; 7 background color (P=Palette C=Color)						--PPCCCC
+               S01:00200A37:  00
+F00:0203       	DC.B $00 ; 8 unused register											--------
+               S01:00200A38:  00
+F00:0204       	DC.B $00 ; 9 unused register											--------
+               S01:00200A39:  00
+F00:0205       	DC.B $FF ;10 H interrupt register (L=Number of lines)					LLLLLLLL
+               S01:00200A3A:  FF
+F00:0206       	DC.B $00 ;11 mode register 3											----IVHL
+               S01:00200A3B:  00
+F00:0207       	DC.B $81 ;12 mode register 4 (C bits both1 = H40 Cell)					C---SIIC
+               S01:00200A3C:  81
+F00:0208       	DC.B $37 ;13 H scroll table base (A=Top 6 bits)							--AAAAAA = $FC00
+               S01:00200A3D:  37
+F00:0209       	DC.B $00 ;14 unused register											--------
+               S01:00200A3E:  00
+F00:0210       	DC.B $02 ;15 auto increment (After each Read/Write)						NNNNNNNN
+               S01:00200A3F:  02
+F00:0211       	DC.B $01 ;16 scroll size (Horiz & Vert size of ScrollA & B)				--VV--HH = 64x32 tiles
+               S01:00200A40:  01
+F00:0212       	DC.B $00 ;17 window H position (D=Direction C=Cells)					D--CCCCC
+               S01:00200A41:  00
+F00:0213       	DC.B $00 ;18 window V position (D=Direction C=Cells)					D--CCCCC
+               S01:00200A42:  00
+F00:0214       	DC.B $FF ;19 DMA length count low										LLLLLLLL
+               S01:00200A43:  FF
+F00:0215       	DC.B $FF ;20 DMA length count high										HHHHHHHH
+               S01:00200A44:  FF
+F00:0216       	DC.B $00 ;21 DMA source address low										LLLLLLLL
+               S01:00200A45:  00
+F00:0217       	DC.B $00 ;22 DMA source address mid										MMMMMMMM
+               S01:00200A46:  00
+F00:0218       	DC.B $80 ;23 DMA source address high (C=CMD)							CCHHHHHH
+               S01:00200A47:  80
+F00:0219       VDPSettingsEnd:
+F00:0220       	even
+F00:0221       	
+F00:0222       
+F00:0223       
+F00:0224       	include "\SrcALL\Multiplatform_Monitor.asm"
+F02:0001       
+F02:0002       
+F02:0003       ShowReg:
+F02:0004       	
+F02:0005       		move.w #$0000,d0
+               S01:00200A48:  30 3C 00 00
+F02:0006       		move.b (a0),d0
+               S01:00200A4C:  10 10
+F02:0007       		bsr PrintHex
+               S01:00200A4E:  61 10
+F02:0008       		move.b (1,a0),d0
+               S01:00200A50:  10 28 00 01
+F02:0009       		bsr PrintHex
+               S01:00200A54:  61 0A
+F02:0010       		move.b (2,a0),d0
+               S01:00200A56:  10 28 00 02
+F02:0011       		bsr PrintHex
+               S01:00200A5A:  61 04
+F02:0012       		move.b (3,a0),d0
+               S01:00200A5C:  10 28 00 03
+F02:0013       		;bsr PrintHex	
+F02:0014       		
+F02:0015       PrintHex:
+F02:0016       	pushall
+F03:0001       		moveM.l d0-d7/a0-a7,-(sp)
+               S01:00200A60:  48 E7 FF FF
+F02:0017       		move.w d0,d2
+               S01:00200A64:  34 00
+F02:0018       		move.w d2,d1
+               S01:00200A66:  32 02
+F02:0019       		and.w #%11110000,d1
+               S01:00200A68:  C2 7C 00 F0
+F02:0020       		ror.b #4,D1	
+               S01:00200A6C:  E8 19
+F02:0021       		bsr PrintHexChar
+               S01:00200A6E:  61 0E
+F02:0022       		
+F02:0023       		move.w d2,d1
+               S01:00200A70:  32 02
+F02:0024       		and.w #%00001111,d1
+               S01:00200A72:  C2 7C 00 0F
+F02:0025       		bsr PrintHexChar	
+               S01:00200A76:  61 06
+F02:0026       	popall
+F04:0001       		moveM.l (sp)+,d0-d7/a0-a7
+               S01:00200A78:  4C DF FF FF
+F02:0027       	rts
+               S01:00200A7C:  4E 75
+F02:0028       PrintHexChar:	
+F02:0029       	move.w d1,d0
+               S01:00200A7E:  30 01
+F02:0030       	and.l #$FF,d0
+               S01:00200A80:  C0 BC 00 00 00 FF
+F02:0031       	cmp.b #9,d0
+               S01:00200A86:  B0 3C 00 09
+F02:0032       	ble PrintHexCharLessThan10
+               S01:00200A8A:  6F 08
+F02:0033       	add.w #'A'-10,d0
+               S01:00200A8C:  D0 7C 00 37
+F02:0034       	jmp PrintChar
+               S01:00200A90:  60 00 FC 2A
+F02:0035       PrintHexCharLessThan10:		
+F02:0036       	add.w #'0',d0
+               S01:00200A94:  D0 7C 00 30
+F02:0037       	jmp PrintChar
+               S01:00200A98:  60 00 FC 22
+F02:0038       	
+F02:0039       	
+F02:0040       	
+F02:0041       Monitor:
+F02:0042       	moveM.l d0-d7/a0-a7,-(sp)
+               S01:00200A9C:  48 E7 FF FF
+F02:0043       
+F02:0044       	move.l sp,a0
+               S01:00200AA0:  20 4F
+F02:0045       
+F02:0046       	
+F02:0047       	move.w #'0',d5
+               S01:00200AA2:  3A 3C 00 30
+F02:0048       	
+F02:0049       ShowNextReg:
+F02:0050       	move.w #'D',d0
+               S01:00200AA6:  30 3C 00 44
+F02:0051       	bsr PrintChar
+               S01:00200AAA:  61 00 FC 10
+F02:0052       	move.w d5,d0
+               S01:00200AAE:  30 05
+F02:0053       	bsr PrintChar
+               S01:00200AB0:  61 00 FC 0A
+F02:0054       	move.w #':',d0
+               S01:00200AB4:  30 3C 00 3A
+F02:0055       	bsr PrintChar
+               S01:00200AB8:  61 00 FC 02
+F02:0056       	bsr ShowReg
+               S01:00200ABC:  61 8A
+F02:0057       	
+F02:0058       	move.w #' ',d0
+               S01:00200ABE:  30 3C 00 20
+F02:0059       	bsr PrintChar
+               S01:00200AC2:  61 00 FB F8
+F02:0060       	bsr PrintChar
+               S01:00200AC6:  61 00 FB F4
+F02:0061       	bsr PrintChar
+               S01:00200ACA:  61 00 FB F0
+F02:0062       	
+F02:0063       	add #8*4,a0
+               S01:00200ACE:  41 E8 00 20
+F02:0064       	
+F02:0065       	move.w #'A',d0
+               S01:00200AD2:  30 3C 00 41
+F02:0066       	bsr PrintChar
+               S01:00200AD6:  61 00 FB E4
+F02:0067       	move.w d5,d0
+               S01:00200ADA:  30 05
+F02:0068       	bsr PrintChar
+               S01:00200ADC:  61 00 FB DE
+F02:0069       	move.w #':',d0
+               S01:00200AE0:  30 3C 00 3A
+F02:0070       	bsr PrintChar
+               S01:00200AE4:  61 00 FB D6
+F02:0071       	bsr ShowReg
+               S01:00200AE8:  61 00 FF 5E
+F02:0072       	
+F02:0073       	sub #8*4,a0
+               S01:00200AEC:  41 E8 FF E0
+F02:0074       	add #4,a0
+               S01:00200AF0:  58 48
+F02:0075       	
+F02:0076       	bsr NewLine
+               S01:00200AF2:  61 00 FC 2E
+F02:0077       	
+F02:0078       	add #1,d5
+               S01:00200AF6:  52 45
+F02:0079       	cmp #'8',d5
+               S01:00200AF8:  BA 7C 00 38
+F02:0080       	bne ShowNextReg
+               S01:00200AFC:  66 A8
+F02:0081       	
+F02:0082       	add #8*4,a0
+               S01:00200AFE:  41 E8 00 20
+F02:0083       	move.w #'P',d0
+               S01:00200B02:  30 3C 00 50
+F02:0084       	bsr PrintChar
+               S01:00200B06:  61 00 FB B4
+F02:0085       	move.w #'C',d0
+               S01:00200B0A:  30 3C 00 43
+F02:0086       	bsr PrintChar
+               S01:00200B0E:  61 00 FB AC
+F02:0087       	move.w #':',d0
+               S01:00200B12:  30 3C 00 3A
+F02:0088       	
+F02:0089       	bsr PrintChar
+               S01:00200B16:  61 00 FB A4
+F02:0090       	bsr ShowReg
+               S01:00200B1A:  61 00 FF 2C
+F02:0091       	bsr NewLine	
+               S01:00200B1E:  61 00 FC 02
+F02:0092       
+F02:0093       
+F02:0094       	moveM.l (sp)+,d0-d7/a0-a7
+               S01:00200B22:  4C DF FF FF
+F02:0095       
+F02:0096       	rts
+               S01:00200B26:  4E 75
+F02:0097       
+F02:0098       ;usage:
+F02:0099       ;	lea Address,a0
+F02:0100       ; 	moveq.l #6,d0
+F02:0101       ;	jsr Monitor_MemDumpDirect
+F02:0102       Monitor_MemDumpDirect:
+F02:0103       	moveM.l d0-d7/a0-a7,-(sp)
+               S01:00200B28:  48 E7 FF FF
+F02:0104       		Movea.l a0,a1
+               S01:00200B2C:  22 48
+F02:0105       		Move.w d0,d4
+               S01:00200B2E:  38 00
+F02:0106       		jsr Monitor_MemDumpDraw
+               S01:00200B30:  61 22
+F02:0107       	moveM.l (sp)+,d0-d7/a0-a7
+               S01:00200B32:  4C DF FF FF
+F02:0108       	rts
+               S01:00200B36:  4E 75
+F02:0109       	
+F02:0110       ;usage:
+F02:0111       	;jsr Monitor_MemDump
+F02:0112       	;dc.l $00000000
+F02:0113       	;dc.w $6
+F02:0114       Monitor_MemDump:
+F02:0115       	moveM.l d0-d7/a0-a7,-(sp)
+               S01:00200B38:  48 E7 FF FF
+F02:0116       	bsr NewLine
+               S01:00200B3C:  61 00 FB E4
+F02:0117       	Move.l (64,sp),a0
+               S01:00200B40:  20 6F 00 40
+F02:0118       	;jsr Monitor
+F02:0119       	Movea.l (a0),a1
+               S01:00200B44:  22 50
+F02:0120       	Move.w (4,a0),d4
+               S01:00200B46:  38 28 00 04
+F02:0121       	
+F02:0122       	
+F02:0123       	jsr Monitor_MemDumpDraw
+               S01:00200B4A:  61 08
+F02:0124       	
+F02:0125       	moveM.l (sp)+,d0-d7/a0-a7
+               S01:00200B4C:  4C DF FF FF
+F02:0126       	add.l #6,(sp)
+               S01:00200B50:  5C 97
+F02:0127       	rts
+               S01:00200B52:  4E 75
+F02:0128       	
+F02:0129       Monitor_MemDumpDraw:	
+F02:0130       	move.l a1,d0
+               S01:00200B54:  20 09
+F02:0131       	rol.l #8,d0
+               S01:00200B56:  E1 98
+F02:0132       	bsr PrintHex
+               S01:00200B58:  61 00 FF 06
+F02:0133       	rol.l #8,d0
+               S01:00200B5C:  E1 98
+F02:0134       	bsr PrintHex
+               S01:00200B5E:  61 00 FF 00
+F02:0135       	rol.l #8,d0
+               S01:00200B62:  E1 98
+F02:0136       	bsr PrintHex
+               S01:00200B64:  61 00 FE FA
+F02:0137       	rol.l #8,d0
+               S01:00200B68:  E1 98
+F02:0138       	bsr PrintHex
+               S01:00200B6A:  61 00 FE F4
+F02:0139       	
+F02:0140       	
+F02:0141       	Move.b #':',d0
+               S01:00200B6E:  10 3C 00 3A
+F02:0142       	bsr PrintChar
+               S01:00200B72:  61 00 FB 48
+F02:0143       	bsr NewLine
+               S01:00200B76:  61 00 FB AA
+F02:0144       MemDump_NextLine:
+F02:0145       	move.l #7,d3
+               S01:00200B7A:  76 07
+F02:0146       MemDump_NextByte:
+F02:0147       	move.b (a1)+,d0
+               S01:00200B7C:  10 19
+F02:0148       	bsr PrintHex
+               S01:00200B7E:  61 00 FE E0
+F02:0149       	Move.b #' ',d0
+               S01:00200B82:  10 3C 00 20
+F02:0150       	bsr PrintChar
+               S01:00200B86:  61 00 FB 34
+F02:0151       	dbra d3,MemDump_NextByte
+               S01:00200B8A:  51 CB FF F0
+F02:0152       	;jsr Monitor
+F02:0153       	subq.l #8,a1
+               S01:00200B8E:  51 89
+F02:0154       	move.w #7,d3
+               S01:00200B90:  36 3C 00 07
+F02:0155       MemDump_NextChar:
+F02:0156       	move.b (a1)+,d0
+               S01:00200B94:  10 19
+F02:0157       	cmp #32,d0
+               S01:00200B96:  B0 7C 00 20
+F02:0158       	blt MemDump_BadChar
+               S01:00200B9A:  6D 08
+F02:0159       	cmp #128,d0
+               S01:00200B9C:  B0 7C 00 80
+F02:0160       	bgt MemDump_BadChar
+               S01:00200BA0:  6E 02
+F02:0161       	bra MemDump_OkChar
+               S01:00200BA2:  60 04
+F02:0162       MemDump_BadChar:
+F02:0163       	Move.b #'.',d0
+               S01:00200BA4:  10 3C 00 2E
+F02:0164       MemDump_OkChar:
+F02:0165       	bsr PrintChar
+               S01:00200BA8:  61 00 FB 12
+F02:0166       	dbra d3,MemDump_NextChar
+               S01:00200BAC:  51 CB FF E6
+F02:0167       	bsr NewLine
+               S01:00200BB0:  61 00 FB 70
+F02:0168       	
+F02:0169       	sub.b #1,d4
+               S01:00200BB4:  53 04
+F02:0170       	bne MemDump_NextLine
+               S01:00200BB6:  66 C2
+F02:0171       	
+F02:0172       	
+F02:0173       	rts
+               S01:00200BB8:  4E 75
+F02:0174       	
+F02:0175       ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+F02:0176       	
+F02:0177       	
+F02:0178       Monitor_PushedRegister:
+F02:0179       	
+F02:0180       	moveM.l d0-d7/a0-a7,-(sp)
+               S01:00200BBA:  48 E7 FF FF
+F02:0181       	Move.b #'*',d0
+               S01:00200BBE:  10 3C 00 2A
+F02:0182       	bsr PrintChar
+               S01:00200BC2:  61 00 FA F8
+F02:0183       	move.l sp,a0
+               S01:00200BC6:  20 4F
+F02:0184       	add.l #64+4,a0
+               S01:00200BC8:  41 E8 00 44
+F02:0185       	bsr ShowReg
+               S01:00200BCC:  61 00 FE 7A
+F02:0186       	Move.b #'*',d0
+               S01:00200BD0:  10 3C 00 2A
+F02:0187       	bsr PrintChar
+               S01:00200BD4:  61 00 FA E6
+F02:0188       	moveM.l (sp)+,d0-d7/a0-a7
+               S01:00200BD8:  4C DF FF FF
+F02:0189       	move.l (sp)+,(sp)			;Write over the pushed register with the return value
+               S01:00200BDC:  2E 9F
+F02:0190       	rts
+               S01:00200BDE:  4E 75
+F00:0225       	
+F00:0226       		
+F00:0227       	org $2000000
+
+
+Sections:
+S01  seg1ffe00
+S02  seg2000000
+
+
+Sources:
+F00  GENCD_HelloWorld_Advanced.asm
+F01  \SrcALL\BasicMacros.asm
+F02  \SrcALL\Multiplatform_Monitor.asm
+F03  PushAll
+F04  PopAll
+
+
+Symbols:
+Monitor_PushedRegister EXPR(2100154=0x0) UNUSED ABS 
+MemDump_OkChar EXPR(2100136=0x0) ABS 
+MemDump_BadChar EXPR(2100132=0x0) ABS 
+MemDump_NextChar EXPR(2100116=0x0) ABS 
+MemDump_NextByte EXPR(2100092=0x0) ABS 
+MemDump_NextLine EXPR(2100090=0x0) ABS 
+Monitor_MemDumpDraw EXPR(2100052=0x0) ABS 
+Monitor_MemDumpDirect EXPR(2100008=0x0) UNUSED ABS 
+ShowNextReg EXPR(2099878=0x0) ABS 
+PrintHexCharLessThan10 EXPR(2099860=0x0) ABS 
+PrintHexChar EXPR(2099838=0x0) ABS 
+CARG EXPR(0=0x0) INTERNAL 
+PrintHex EXPR(2099808=0x0) ABS 
+ShowReg EXPR(2099784=0x0) ABS 
+PrintString_Done EXPR(2098976=0x0) ABS 
+nextpixel_Xok EXPR(2098958=0x0) ABS 
+PrintCharAlt EXPR(2098890=0x0) UNUSED ABS 
+PrintChar EXPR(2098876=0x0) ABS 
+ *current pc dummy* EXPR(2098858=0x0) INTERNAL PROT ABS 
+Monitor_MemDump EXPR(2100024=0x0) ABS 
+Monitor EXPR(2099868=0x0) ABS 
+NewLine EXPR(2098978=0x0) ABS 
+PrintString EXPR(2098964=0x0) ABS 
+Message EXPR(2098860=0x0) ABS 
+Font_NextBit EXPR(2098748=0x0) ABS 
+NextFont EXPR(2098742=0x0) ABS 
+Font_End EXPR(2099760=0x0) ABS 
+Font EXPR(2098992=0x0) ABS 
+NextInitByte EXPR(2098606=0x0) ABS 
+VDPSettingsEnd EXPR(2099784=0x0) ABS 
+VDPSettings EXPR(2099760=0x0) ABS 
+NoTmss EXPR(2098588=0x0) ABS 
+ProgramStart EXPR(2098566=0x0) UNUSED ABS 
+VDP_ctrl EXPR(12582916=0x0) EQU 
+VDP_data EXPR(12582912=0x0) EQU 
+Cursor_Y EXPR(16711681=0x0) EQU 
+Cursor_X EXPR(16711680=0x0) EQU 
+__LINE__ EXPR(227=0x0) INTERNAL 
+__FO EXPR(0=0x0) INTERNAL 
+__RS EXPR(0=0x0) INTERNAL 
+REPTN EXPR(-1=0xffffffff) INTERNAL 
+__VASM EXPR(1=0x0) INTERNAL 
+BuildGENCD EXPR(1=0x0) UNUSED 
+BuildGEN EXPR(1=0x0) UNUSED 
+vasm EXPR(1=0x0) UNUSED 
+
+There have been no errors.

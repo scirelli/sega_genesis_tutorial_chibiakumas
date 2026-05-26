@@ -1,0 +1,15 @@
+chdman - MAME Compressed Hunks of Data (CHD) manager 0.200 (mame0200)
+Input file:   \RelNEO\roms\ChibiAkumasGameCD\ChibiAkumasGameCD.chd
+File Version: 5
+Logical size: 1,811,520 bytes
+Hunk Size:    19,584 bytes
+Total Hunks:  93
+Unit Size:    2,448 bytes
+Total Units:  740
+Compression:  cdlz (CD LZMA), cdzl (CD Deflate), cdfl (CD FLAC)
+CHD size:     6,393 bytes
+Ratio:        0.4%
+SHA1:         e1c85b91c4cefcb7e14f4605c9263146a0e94632
+Data SHA1:    dcf63b10e87e4232c7648b699dacb350c42adac6
+Metadata:     Tag='CHT2'  Index=0  Length=86 bytes
+              TRACK:1 TYPE:MODE1 SUBTYPE:NONE FRAMES:737 PREGAP:0 PGTYPE:M
