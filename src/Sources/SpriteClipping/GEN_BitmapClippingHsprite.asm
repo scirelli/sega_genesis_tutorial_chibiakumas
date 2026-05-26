@@ -1,4 +1,4 @@
-	include "\SrcALL\BasicMacros.asm"
+	include "SrcALL/BasicMacros.asm"
 
 
 VscreenMinX equ 48-4		;Top left of visible screen in logical co-ordinates
@@ -609,7 +609,7 @@ NewLine:
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-	include "\SrcALL\Multiplatform_Monitor.asm"
+	include "SrcALL/Multiplatform_Monitor.asm"
     	
 
 	

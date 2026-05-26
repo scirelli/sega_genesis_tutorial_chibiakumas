@@ -1,8 +1,8 @@
 Cursor_X equ UserRam
 Cursor_Y equ UserRam+1
 
-	include "\SrcALL\BasicMacros.asm"
-	include "\SrcALL\V1_Header.asm"
+	include "SrcALL/BasicMacros.asm"
+	include "SrcALL/V1_Header.asm"
 
 
 	move.b #'A',d0
@@ -219,26 +219,26 @@ Pauser:
 	;move.l d0,-(sp)
 	;jsr Monitor_PushedRegister
 	
-	include "\SrcALL\V1_ReadJoystick.asm"
-	;include "\SrcX68\V1_BitmapMemory.asm"
-	;include "\SrcX68\V1_BitmapMemory.asm"
+	include "SrcALL/V1_ReadJoystick.asm"
+	;include "SrcX68/V1_BitmapMemory.asm"
+	;include "SrcX68/V1_BitmapMemory.asm"
 	
-	;include "\SrcNEO\V1_VdpMemory.asm"
-	;include "\SrcGEN\V1_VdpMemory.asm"
-	include "\SrcALL\V1_Palette.asm"
-	;include "\SrcGEN\V1_Palette.asm"
-	;include "\SrcAST\V1_BitmapMemory.asm"
-	;include "\SrcAMI\V1_BitmapMemory.asm"
-	include "\SrcALL\V1_BitmapMemory.asm"
-	;include "\SrcX68\V1_Palette.asm"
-	;include "\SrcNEO\V1_Palette.asm"
-	;include "\SrcAST\V1_Palette.asm"
-	;include "\SrcAMI\V1_Palette.asm"
+	;include "SrcNEO/V1_VdpMemory.asm"
+	;include "SrcGEN/V1_VdpMemory.asm"
+	include "SrcALL/V1_Palette.asm"
+	;include "SrcGEN/V1_Palette.asm"
+	;include "SrcAST/V1_BitmapMemory.asm"
+	;include "SrcAMI/V1_BitmapMemory.asm"
+	include "SrcALL/V1_BitmapMemory.asm"
+	;include "SrcX68/V1_Palette.asm"
+	;include "SrcNEO/V1_Palette.asm"
+	;include "SrcAST/V1_Palette.asm"
+	;include "SrcAMI/V1_Palette.asm"
 	
-	include "\SrcALL\V1_Functions.asm"
-	include "\SrcALL\Multiplatform_Monitor.asm"
+	include "SrcALL/V1_Functions.asm"
+	include "SrcALL/Multiplatform_Monitor.asm"
 	
-	include "\SrcALL\V1_DataArea.asm"
+	include "SrcALL/V1_DataArea.asm"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;				Data Area
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
@@ -293,9 +293,9 @@ Palette:
 
 Message: dc.b 'Hello World!!!',255
 	even
-	include "\SrcALL\V1_RamArea.asm"
+	include "SrcALL/V1_RamArea.asm"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;				Ram Area - May not be possible on all systems!!!
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
-	include "\SrcALL\V1_Footer.asm"
+	include "SrcALL/V1_Footer.asm"

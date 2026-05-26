@@ -1,10 +1,10 @@
-	include "\SrcALL\ChibiVm_InstSet.asm"
+	include "SrcALL/ChibiVm_InstSet.asm"
 	
 vm_usevmem equ 1
 
 ;compile with option: VASM GEN
 
-	include "\SrcALL\BasicMacros.asm"
+	include "SrcALL/BasicMacros.asm"
 	org 0
 ;Ram Variables
 ;Cursor_X equ $00FFF000		;Ram for Cursor Xpos
@@ -436,7 +436,7 @@ VDPSettingsEnd:
 	
 
 
-	include "\SrcALL\Multiplatform_Monitor.asm"
+	include "SrcALL/Multiplatform_Monitor.asm"
 
 	org $10800
 	
@@ -788,7 +788,7 @@ vm_Traps:
 	dw TestProgram
 	dw TestTrap1	
 	
-	include "\SrcALL\ChibiVm_CPU.asm"
-	include "\Sources\ChibiVM\ChibiVM_Host.asm"
+	include "SrcALL/ChibiVm_CPU.asm"
+	include "Sources/ChibiVM/ChibiVM_Host.asm"
 		
 		

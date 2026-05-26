@@ -1,4 +1,4 @@
-	include "\SrcALL\BasicMacros.asm"		;Needed for Monitor
+	include "SrcALL/BasicMacros.asm"		;Needed for Monitor
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	;Console INIT
 		
@@ -73,7 +73,7 @@ NewLine:
 	jsr PrintChar
 	rts
 	
-	include "\SrcALL\Multiplatform_Monitor.asm"
+	include "SrcALL/Multiplatform_Monitor.asm"
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	

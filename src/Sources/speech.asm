@@ -14,8 +14,8 @@
 Cursor_X equ UserRam
 Cursor_Y equ UserRam+2
 
-	include "\SrcALL\BasicMacros.asm"
-	include "\SrcALL\V1_Header.asm"
+	include "SrcALL/BasicMacros.asm"
+	include "SrcALL/V1_Header.asm"
 
 	
 uservars equ userram+32
@@ -65,11 +65,11 @@ mystring:
 	
 
 	even
-	include "\SrcALL\V1_Palette.asm"
-	include "\SrcALL\V1_BitmapMemory.asm"
-	include "\SrcALL\V1_VdpMemory.asm"
-	include "\SrcALL\V1_Functions.asm"
-	include "\SrcALL\Multiplatform_Monitor.asm"
+	include "SrcALL/V1_Palette.asm"
+	include "SrcALL/V1_BitmapMemory.asm"
+	include "SrcALL/V1_VdpMemory.asm"
+	include "SrcALL/V1_Functions.asm"
+	include "SrcALL/Multiplatform_Monitor.asm"
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -957,7 +957,7 @@ hlswitcher:
 	
 	
 	even
-	include "\SrcALL\V1_DataArea.asm"
+	include "SrcALL/V1_DataArea.asm"
 	
 	even
 
@@ -2021,12 +2021,12 @@ Font:
 	endif
 	
 	
-	include "\SrcALL\V1_RamArea.asm"
+	include "SrcALL/V1_RamArea.asm"
 	
 	ifd BuildAMI
 WaveSample: dc.w 0	
 	endif
 	
 	
-	include "\SrcALL\V1_Footer.asm"
+	include "SrcALL/V1_Footer.asm"
 	

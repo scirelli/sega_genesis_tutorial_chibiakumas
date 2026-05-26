@@ -11,8 +11,8 @@ VscreenHei equ 96
 
 	include "header.asm"
 	
-	include "\SrcALL\ChibiVm_InstSet.asm"
-	include "\SrcALL\BasicMacros.asm"
+	include "SrcALL/ChibiVm_InstSet.asm"
+	include "SrcALL/BasicMacros.asm"
 
 	ifd BuildSQL
 VM_RamBase equ $30000
@@ -154,12 +154,12 @@ VM_Run:
 		
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
-	include "\SrcALL\V1_NativeSprite.asm"	
+	include "SrcALL/V1_NativeSprite.asm"	
 	
 	
-	include "..\ChibiVM\Multiplatform_MonitorA.asm"
+	include "../ChibiVM/Multiplatform_MonitorA.asm"
 	include "ChibiVM_AdventureEngine.asm"
-	include "\Sources\ChibiVM\ChibiVM_Host.asm"
+	include "Sources/ChibiVM/ChibiVM_Host.asm"
 	
 	
 	
@@ -765,7 +765,7 @@ VM_RamBaseAddr: dc.l VM_RamBase2+65536
 	
 	
 	even
-	include "\SrcALL\ChibiVm_CPU.asm"		
+	include "SrcALL/ChibiVm_CPU.asm"		
 	
 	even
 	include "core.asm"

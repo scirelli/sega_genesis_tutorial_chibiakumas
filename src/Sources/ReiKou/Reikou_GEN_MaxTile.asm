@@ -2,7 +2,7 @@
 ScreenBase equ $C000+8+(64*4)	;Tilemap base VRAM address
 ;                                     
 
-	include "\SrcGEN\Gen_V1_MaxTile_Normal.asm"
+	include "SrcGEN/Gen_V1_MaxTile_Normal.asm"
 	
 	
 ;                                     initmaxtile:

@@ -1,4 +1,4 @@
-	include "\SrcALL\BasicMacros.asm"
+	include "SrcALL/BasicMacros.asm"
 
 Color1 equ 1				;Color palette
 Color2 equ 2				;These are color attributes
@@ -236,13 +236,13 @@ waitforfireb:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
 	even
-	include "\ResAll\Vector\VectorFont.asm"
+	include "ResAll/Vector/VectorFont.asm"
 	
 	include "PH_Title.asm"
 	even
 	
-	include "\SrcALL\BasicFunctions.asm"	
-	include "\SrcALL\MultiPlatform_ShowDecimal.asm"
+	include "SrcALL/BasicFunctions.asm"	
+	include "SrcALL/MultiPlatform_ShowDecimal.asm"
 	include "PH_DataDefs.asm"
 	include "PH_RamDefs.asm"
 	

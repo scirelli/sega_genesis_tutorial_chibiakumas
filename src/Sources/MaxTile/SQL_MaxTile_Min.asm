@@ -1,6 +1,6 @@
 
 
-	include "\SrcAll\BasicMacros.asm"
+	include "SrcAll/BasicMacros.asm"
 
 ScreenBase equ $00020000+(128*32)
 
@@ -225,21 +225,21 @@ ReadJoystick:
 	
 
 	ifd DoubleBuffered
-		include "\SrcAll\V1_MaxTile_DirectDriver.asm"
+		include "SrcAll/V1_MaxTile_DirectDriver.asm"
 	else
-		include "\SrcAll\V1_MaxTile_CacheDriver.asm"
+		include "SrcAll/V1_MaxTile_CacheDriver.asm"
 	endif 
 
- 	include "\SrcAll\V1_MaxTile.asm"
+ 	include "SrcAll/V1_MaxTile.asm"
 
 	include "MaxTile_Test1.asm"
 
- 	include "\SrcAll\BasicFunctions.asm"
+ 	include "SrcAll/BasicFunctions.asm"
 
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	
-	include "\SrcSQL\SQL_V1_MaxTile_Normal.asm"
+	include "SrcSQL/SQL_V1_MaxTile_Normal.asm"
 	
 FlipLUT:		;bottom byte of address must be $????00-???FF
 	ds.b 256

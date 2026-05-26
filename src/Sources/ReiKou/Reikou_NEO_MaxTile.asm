@@ -17,13 +17,13 @@ ScreenBase equ $7000+4+(32*4)	;Fix layer base $7084
 	endif
 	
 	ifd UseHsprite
-		include "\SrcAll\V1_MaxTile_HspriteDriver.asm"
+		include "SrcAll/V1_MaxTile_HspriteDriver.asm"
 		
-		include "\SrcNEO\NEO_V1_MaxTile_Hsprite.asm"	
+		include "SrcNEO/NEO_V1_MaxTile_Hsprite.asm"	
 		
-		include "\SrcNEO\NEO_V1_MaxTile_SpriteTilemap.asm"
+		include "SrcNEO/NEO_V1_MaxTile_SpriteTilemap.asm"
 	else
-		include "\SrcNEO\NEO_V1_MaxTile_Fix.asm"
+		include "SrcNEO/NEO_V1_MaxTile_Fix.asm"
 	endif
 	
 	

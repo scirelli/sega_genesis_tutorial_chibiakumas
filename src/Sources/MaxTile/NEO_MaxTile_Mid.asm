@@ -1,5 +1,5 @@
 
-	include "\SrcAll\BasicMacros.asm"
+	include "SrcAll/BasicMacros.asm"
 	
 ;tiletest_basiconly equ 1
 ;slowdowntest equ 1
@@ -425,13 +425,13 @@ ReadJoystick:		;D0=1up D1=2up ---7654S321RLDU
 	
 	
 	ifd UseHsprite
-		include "\SrcAll\V1_MaxTile_HspriteDriver.asm"
+		include "SrcAll/V1_MaxTile_HspriteDriver.asm"
 		
-		include "\SrcNEO\NEO_V1_MaxTile_Hsprite.asm"	
+		include "SrcNEO/NEO_V1_MaxTile_Hsprite.asm"	
 		
-		include "\SrcNEO\NEO_V1_MaxTile_SpriteTilemap.asm"
+		include "SrcNEO/NEO_V1_MaxTile_SpriteTilemap.asm"
 	else
-		include "\SrcNEO\NEO_V1_MaxTile_Fix.asm"
+		include "SrcNEO/NEO_V1_MaxTile_Fix.asm"
 	endif
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
@@ -439,16 +439,16 @@ ReadJoystick:		;D0=1up D1=2up ---7654S321RLDU
 
 
 	ifd DoubleBuffered
-		include "\SrcAll\V1_MaxTile_DirectDriver.asm"
+		include "SrcAll/V1_MaxTile_DirectDriver.asm"
 	else
-		include "\SrcAll\V1_MaxTile_CacheDriver.asm"
+		include "SrcAll/V1_MaxTile_CacheDriver.asm"
 	endif 
 
-	include "\SrcAll\V1_MaxTile_Expanders.asm"
+	include "SrcAll/V1_MaxTile_Expanders.asm"
 		
- 	include "\SrcAll\V1_MaxTile.asm"
+ 	include "SrcAll/V1_MaxTile.asm"
 
- 	include "\SrcAll\BasicFunctions.asm"
+ 	include "SrcAll/BasicFunctions.asm"
 	
 	
 	include "MaxTile_Test2.asm"

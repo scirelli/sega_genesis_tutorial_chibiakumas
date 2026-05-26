@@ -3,8 +3,8 @@ Cursor_Y equ UserRam+1
 	ifd BuildX68
 ScrWid256 equ 1
 	endif
-	include "\SrcALL\BasicMacros.asm"
-	include "\SrcALL\V1_Header.asm"
+	include "SrcALL/BasicMacros.asm"
+	include "SrcALL/V1_Header.asm"
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -183,16 +183,16 @@ MonitorD0:				;Monitor D0 subroutine
 	 rts	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 
-	include "\SrcALL\V1_VdpMemory.asm"
+	include "SrcALL/V1_VdpMemory.asm"
 	
-	include "\SrcALL\V1_BitmapMemory.asm"
-	include "\SrcAll\V1_Palette.asm"
+	include "SrcALL/V1_BitmapMemory.asm"
+	include "SrcAll/V1_Palette.asm"
 	
-	include "\SrcALL\V1_Functions.asm"
-	include "\SrcALL\Multiplatform_Monitor.asm"
+	include "SrcALL/V1_Functions.asm"
+	include "SrcALL/Multiplatform_Monitor.asm"
 	
-	include "\SrcALL\BasicFunctions.asm"	
-	include "\SrcALL\V1_DataArea.asm"
+	include "SrcALL/BasicFunctions.asm"	
+	include "SrcALL/V1_DataArea.asm"
 		
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;				Data Area
@@ -205,7 +205,7 @@ EndedString:
 	dc.b 'End!',255
 
 	even
-	include "\SrcALL\V1_RamArea.asm"
+	include "SrcALL/V1_RamArea.asm"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;				Ram Area - May not be possible on all systems!!!
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -219,4 +219,4 @@ A1Test:
 	dc.b $32,$23		;Two bytes at label A1Test
 	
 	
-	include "\SrcALL\V1_Footer.asm"
+	include "SrcALL/V1_Footer.asm"

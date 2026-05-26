@@ -1,10 +1,10 @@
 ;compile with option: VASM GEN
 vm_usevmem equ 1
 
-	include "\Sources\ChibiAdventure\header.asm"
+	include "Sources/ChibiAdventure/header.asm"
 	
-	include "\SrcALL\ChibiVm_InstSet.asm"
-	include "\SrcALL\BasicMacros.asm"
+	include "SrcALL/ChibiVm_InstSet.asm"
+	include "SrcALL/BasicMacros.asm"
 	
 	
 VM_ProgLoadAddr equ $400
@@ -68,13 +68,13 @@ VM_RamBaseAddr: dc.l VM_RamBase
 	
 	
 	
-	include "..\ChibiVM\Multiplatform_MonitorA.asm"
+	include "../ChibiVM/Multiplatform_MonitorA.asm"
 	
 	
 	include "NativeSprite.asm"
-	include "\SrcGEN\V1_NativeSprite.asm"
-	include "\Sources\ChibiAdventure\ChibiVM_AdventureEngine.asm"
-	include "\Sources\ChibiVM\ChibiVM_Host.asm"
+	include "SrcGEN/V1_NativeSprite.asm"
+	include "Sources/ChibiAdventure/ChibiVM_AdventureEngine.asm"
+	include "Sources/ChibiVM/ChibiVM_Host.asm"
 	
 	org $10000	;Needed for some reason - somethings messing up the next org otherwise
 		
@@ -306,11 +306,11 @@ Palette:
 	
 	org $20000			;Ensure no label calc problems
 
-	include "\SrcALL\ChibiVm_CPU.asm"		
+	include "SrcALL/ChibiVm_CPU.asm"		
 	
 	even
 
-	include "\Sources\ChibiAdventure\core.asm"
-	include "\Sources\ChibiAdventure\footer.asm"
+	include "Sources/ChibiAdventure/core.asm"
+	include "Sources/ChibiAdventure/footer.asm"
  
  

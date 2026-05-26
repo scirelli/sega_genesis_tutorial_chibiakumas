@@ -1,4 +1,4 @@
-	include "\SrcALL\BasicMacros.asm"
+	include "SrcALL/BasicMacros.asm"
 	
 	move.b #%00001000,$18063	;Force 8 color mode!
 	

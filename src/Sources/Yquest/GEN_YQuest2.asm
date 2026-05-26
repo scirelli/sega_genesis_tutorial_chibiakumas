@@ -1,4 +1,4 @@
-	include "\SrcALL\BasicMacros.asm"
+	include "SrcALL/BasicMacros.asm"
 PlayerHsprite equ 1
 
 
@@ -636,10 +636,10 @@ Palette:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 	include "YQ_Multiplatform2.asm"
-	include "\SrcALL\V1_ChibiSound.asm"
-	include "\SrcALL\Multiplatform_BCD.asm"
-	include "\SrcALL\BasicFunctions.asm"	
-	include "\SrcALL\MultiPlatform_ShowDecimal.asm"
+	include "SrcALL/V1_ChibiSound.asm"
+	include "SrcALL/Multiplatform_BCD.asm"
+	include "SrcALL/BasicFunctions.asm"	
+	include "SrcALL/MultiPlatform_ShowDecimal.asm"
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	

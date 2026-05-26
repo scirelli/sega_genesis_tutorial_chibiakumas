@@ -19,8 +19,8 @@ VscreenHei equ 96
 
 	include "header.asm"
 	
-	include "\SrcALL\ChibiVm_InstSet.asm"
-	include "\SrcALL\BasicMacros.asm"
+	include "SrcALL/ChibiVm_InstSet.asm"
+	include "SrcALL/BasicMacros.asm"
 
 	ifd BuildAMI
 	ifd NativeSpr_Multiplatform2Bitplane
@@ -177,19 +177,19 @@ VM_Run:
 		
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
-	include "\SrcALL\V1_NativeSprite.asm"	
+	include "SrcALL/V1_NativeSprite.asm"	
 	even
 	
 	
 	
-	include "..\ChibiVM\Multiplatform_MonitorA.asm"
+	include "../ChibiVM/Multiplatform_MonitorA.asm"
 	include "AdventureEngine_PrintW.asm"
 	include "AdventureEngineX_Monitor.asm"
 	include "ChibiVM_AdventureEngineX.asm"	;Must come before  ChibiVM_AdventureEngine.asm
-	include "\SrcALL\V1_GenericAnimator.asm"	;Must come before  ChibiVM_AdventureEngine.asm
+	include "SrcALL/V1_GenericAnimator.asm"	;Must come before  ChibiVM_AdventureEngine.asm
 	include "AdventureEngineX.asm"				;Must come before  ChibiVM_AdventureEngine.asm
 	include "ChibiVM_AdventureEngine.asm"
-	include "\Sources\ChibiVM\ChibiVM_Host.asm"
+	include "Sources/ChibiVM/ChibiVM_Host.asm"
 
 vm_causecallfromoutsidevm:		;TODO!!!!!!!!!!!!!!!	
 	rts
@@ -1221,7 +1221,7 @@ VM_RamBaseAddr: dc.l VM_RamBase2+65536
 	
 	even
 	
-	include "\SrcALL\ChibiVm_CPU.asm"		
+	include "SrcALL/ChibiVm_CPU.asm"		
 
 	
 	even

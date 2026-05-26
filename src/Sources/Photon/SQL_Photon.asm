@@ -1,4 +1,4 @@
-	include "\SrcALL\BasicMacros.asm"
+	include "SrcALL/BasicMacros.asm"
 
 ;Game Colors 
 Color1 equ 5				;Cyan
@@ -293,13 +293,13 @@ waitforfireb:
 
 
 	even
-	include "\ResAll\Vector\VectorFont.asm"
+	include "ResAll/Vector/VectorFont.asm"
 	
 	include "PH_Title.asm"
 	even
 	
-	include "\SrcALL\BasicFunctions.asm"	
-	include "\SrcALL\MultiPlatform_ShowDecimal.asm"
+	include "SrcALL/BasicFunctions.asm"	
+	include "SrcALL/MultiPlatform_ShowDecimal.asm"
 	include "PH_DataDefs.asm"
 	include "PH_RamDefs.asm"
 	

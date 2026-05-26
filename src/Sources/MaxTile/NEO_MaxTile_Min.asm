@@ -28,7 +28,7 @@ ScreenBase equ $7000+4+(32*4)
 
 MaxTileData equ $100000
 
-	include "\SrcAll\BasicMacros.asm"
+	include "SrcAll/BasicMacros.asm"
 		
 ;tiletest_basiconly equ 1
 ;slowdowntest equ 1
@@ -381,9 +381,9 @@ ReadJoystick:		;D0=1up D1=2up ---7654S321RLDU
 	rts
 	
 	ifd UseHsprite
-		include "\SrcNEO\NEO_V1_MaxTile_SpriteTilemap.asm"
+		include "SrcNEO/NEO_V1_MaxTile_SpriteTilemap.asm"
 	else
-		include "\SrcNEO\NEO_V1_MaxTile_Fix.asm"
+		include "SrcNEO/NEO_V1_MaxTile_Fix.asm"
 	endif
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
@@ -391,16 +391,16 @@ ReadJoystick:		;D0=1up D1=2up ---7654S321RLDU
 
 
 	ifd DoubleBuffered
-		include "\SrcAll\V1_MaxTile_DirectDriver.asm"
+		include "SrcAll/V1_MaxTile_DirectDriver.asm"
 	else
-		include "\SrcAll\V1_MaxTile_CacheDriver.asm"
+		include "SrcAll/V1_MaxTile_CacheDriver.asm"
 	endif 
 
- 	include "\SrcAll\V1_MaxTile.asm"
+ 	include "SrcAll/V1_MaxTile.asm"
 
 	include "MaxTile_Test1.asm"
 
- 	include "\SrcAll\BasicFunctions.asm"
+ 	include "SrcAll/BasicFunctions.asm"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	

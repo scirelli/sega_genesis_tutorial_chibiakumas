@@ -35,8 +35,8 @@ SongChannels equ SongBase+4 ; dc.b 0
 SongSpeed equ  SongChannels+1 ; dc.b 0
 
 
-	include "\SrcALL\BasicMacros.asm"
-	include "\SrcALL\V1_Header.asm"
+	include "SrcALL/BasicMacros.asm"
+	include "SrcALL/V1_Header.asm"
 	
 	jsr KeyboardScanner_AllowJoysticks	;Turn on joysticks on systems that need init
 		
@@ -84,11 +84,11 @@ delay2:
 	even
 Song1:
 	;incbin "\ResAll\ChibiSoundPro\Song1000.cbt"
-	;include "\ResAll\ChibiSoundPro\CBT1.asm"
+	;include "ResAll/ChibiSoundPro/CBT1.asm"
 	;incbin "\ResAll\ChibiSoundPro\song.cbt"
 	;incbin "\ResAll\ChibiSoundPro\song2.cbt"
 	incbin "\ResAll\ChibiSoundPro\ChibiAkumasTheme.cbt"
-	;include "\ResAll\ChibiSoundPro\Song2.asm"
+	;include "ResAll/ChibiSoundPro/Song2.asm"
 	even
 	
 	ifd NeedInstruments
@@ -181,22 +181,22 @@ InstrumentScript:
 
 	endif
 	
-	include "\SrcALL\Multiplatform_ChibiTracks.asm"
-	include "\SrcALL\Multiplatform_ChibiTracks_Tweener.asm"
-	include "\SrcALL\Multiplatform_Fraction16.asm"
-	include "\SrcALL\BasicFunctions.asm"
-	include "\SrcALL\V1_ChibiSoundPro.asm"
+	include "SrcALL/Multiplatform_ChibiTracks.asm"
+	include "SrcALL/Multiplatform_ChibiTracks_Tweener.asm"
+	include "SrcALL/Multiplatform_Fraction16.asm"
+	include "SrcALL/BasicFunctions.asm"
+	include "SrcALL/V1_ChibiSoundPro.asm"
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	
-	include "\SrcALL\V1_ReadJoystick.asm"
-	include "\SrcALL\V1_Palette.asm"
-	include "\SrcALL\V1_BitmapMemory.asm"
-	include "\SrcALL\V1_VdpMemory.asm"
-	include "\SrcALL\V1_Functions.asm"
-	include "\SrcALL\Multiplatform_Monitor.asm"
+	include "SrcALL/V1_ReadJoystick.asm"
+	include "SrcALL/V1_Palette.asm"
+	include "SrcALL/V1_BitmapMemory.asm"
+	include "SrcALL/V1_VdpMemory.asm"
+	include "SrcALL/V1_Functions.asm"
+	include "SrcALL/Multiplatform_Monitor.asm"
 	
-	include "\SrcALL\V1_DataArea.asm"
+	include "SrcALL/V1_DataArea.asm"
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;				Data Area
@@ -231,7 +231,7 @@ Palette:
 	even
 
 	even
-	include "\SrcALL\V1_RamArea.asm"
+	include "SrcALL/V1_RamArea.asm"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;				Ram Area - May not be possible on all systems!!!
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -257,4 +257,4 @@ ChibiSoundRam:	ds.b 256
 	endif
 	
 	
-	include "\SrcALL\V1_Footer.asm"
+	include "SrcALL/V1_Footer.asm"

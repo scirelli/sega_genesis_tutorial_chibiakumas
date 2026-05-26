@@ -91,24 +91,24 @@ mpbitmap_gettile_Reikou:
 	rts
 	
 	ifd BuildGEN
-		include "\SrcGen\GEN_V1_MultiplatformBitmap.asm"
+		include "SrcGen/GEN_V1_MultiplatformBitmap.asm"
 	endif
 	
 	ifd BuildX68
-		include "\SrcX68\X68_V1_MultiplatformBitmap.asm"
+		include "SrcX68/X68_V1_MultiplatformBitmap.asm"
 	endif
 	
 	ifd BuildSQL
-		include "\SrcSQL\SQL_V1_MultiplatformBitmap.asm"
+		include "SrcSQL/SQL_V1_MultiplatformBitmap.asm"
 	endif
 	
 	ifd BuildAMI
-		include "\SrcAMI\AMI_V1_MultiplatformBitmap.asm"
+		include "SrcAMI/AMI_V1_MultiplatformBitmap.asm"
 	endif
 	
 	
 	ifd BuildAST
-		include "\SrcAST\AST_V1_MultiplatformBitmap.asm"
+		include "SrcAST/AST_V1_MultiplatformBitmap.asm"
 	endif
 	
 	

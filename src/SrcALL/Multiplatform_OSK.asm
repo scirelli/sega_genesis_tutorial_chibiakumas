@@ -506,44 +506,44 @@ keyboard_waitforkey:
 	rts
 
     ifd buildcpc
-;                                             include "\srccpc\cpc_v2_keyboard.asm"
-        include "\srccpc\cpc_v2_keyboard.asm"
+;                                             include "srccpc/cpc_v2_keyboard.asm"
+        include "srccpc/cpc_v2_keyboard.asm"
 ;                                         endif 
 	endif
 ;                                         ifd buildzxs
     ifd buildzxs
-;                                             include "\srczx\zx_v2_keyboard.asm"
-        include "\srczx\zx_v2_keyboard.asm"
+;                                             include "srczx/zx_v2_keyboard.asm"
+        include "srczx/zx_v2_keyboard.asm"
 ;                                         endif 
 	endif
 ;                                         ifd buildsam
     ifd buildsam
-;                                             include "\srcsam\sam_v2_keyboard.asm"
-        include "\srcsam\sam_v2_keyboard.asm"
+;                                             include "srcsam/sam_v2_keyboard.asm"
+        include "srcsam/sam_v2_keyboard.asm"
 ;                                         endif 
 	endif
 ;                                         ifd buildti8
     ifd buildti8
-;                                             include "\srcti\ti_v2_keyboard.asm"
-        include "\srcti\ti_v2_keyboard.asm"
+;                                             include "srcti/ti_v2_keyboard.asm"
+        include "srcti/ti_v2_keyboard.asm"
 ;                                         endif
 	endif
 ;                                         ifd buildmsx
     ifd buildmsx
-;                                             include "\srcmsx\msx_v2_keyboard.asm"
-        include "\srcmsx\msx_v2_keyboard.asm"
+;                                             include "srcmsx/msx_v2_keyboard.asm"
+        include "srcmsx/msx_v2_keyboard.asm"
 ;                                         endif
 	endif
 ;                                         ifd buildent
     ifd buildent
-;                                             include "\srcent\ent_v2_keyboard.asm"
-        include "\srcent\ent_v2_keyboard.asm"
+;                                             include "srcent/ent_v2_keyboard.asm"
+        include "srcent/ent_v2_keyboard.asm"
 ;                                         endif
 	endif
 ;                                         ifd buildclx
     ifd buildclx
-;                                             include "\srcclx\clx_v2_keyboard.asm"
-        include "\srcclx\clx_v2_keyboard.asm"
+;                                             include "srcclx/clx_v2_keyboard.asm"
+        include "srcclx/clx_v2_keyboard.asm"
 ;                                         endif
 	endif
 ;                                         

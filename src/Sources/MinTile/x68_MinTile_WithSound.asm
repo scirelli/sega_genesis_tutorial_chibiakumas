@@ -1,7 +1,7 @@
 ScreenBase equ $c00000+(1024*16)
 
 
-	include "\SrcAll\BasicMacros.asm"
+	include "SrcAll/BasicMacros.asm"
 		
 TileSmoothXmove equ 1	;move in blocks <8 pixels
 TileSmoothYmove equ 1	;This would just waste cpu power
@@ -425,7 +425,7 @@ TileDoneRev:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	
 
-	include "/srcALL/V1_MinimalTile.asm"
+	include "srcALL/V1_MinimalTile.asm"
 
 TestSprite:
 	incbin "\ResALL\Yquest\MSX2_Yquest.raw"
@@ -557,13 +557,13 @@ KeyboardScanner_AllowJoysticks:
 	
 	
 	
-	include "\SrcALL\V1_ChibiSoundPro.asm"	;Platform sound driver
+	include "SrcALL/V1_ChibiSoundPro.asm"	;Platform sound driver
 	
 	;Music player
-	include "\SrcALL\Multiplatform_ChibiTracks.asm"
-	include "\SrcALL\Multiplatform_ChibiTracks_Tweener.asm"
-	include "\SrcALL\Multiplatform_Fraction16.asm"
-	include "\SrcALL\BasicFunctions.asm"
+	include "SrcALL/Multiplatform_ChibiTracks.asm"
+	include "SrcALL/Multiplatform_ChibiTracks_Tweener.asm"
+	include "SrcALL/Multiplatform_Fraction16.asm"
+	include "SrcALL/BasicFunctions.asm"
 
 	;Song to play
 Song1:

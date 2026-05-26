@@ -60,7 +60,7 @@ Sprite4 equ Sprite3+40
 
 
 
-	include "\SrcAll\BasicMacros.asm"
+	include "SrcAll/BasicMacros.asm"
 		
 
 
@@ -169,24 +169,24 @@ T_Sprites_End:
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	
-	include "\SrcX68\X68_V1_MaxTile_Normal.asm"
-	include "\SrcX68\x68_V1_SpeedTile_ClearBorder.asm"
+	include "SrcX68/X68_V1_MaxTile_Normal.asm"
+	include "SrcX68/x68_V1_SpeedTile_ClearBorder.asm"
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	
 
 	ifd DoubleBuffered
-		include "\SrcAll\V1_MaxTile_DirectDriver.asm"
+		include "SrcAll/V1_MaxTile_DirectDriver.asm"
 	else
-		include "\SrcAll\V1_MaxTile_CacheDriver.asm"
+		include "SrcAll/V1_MaxTile_CacheDriver.asm"
 	endif 
 
- 	include "\SrcAll\V1_MaxTile.asm"
+ 	include "SrcAll/V1_MaxTile.asm"
 
 	include "MaxTile_Test2.asm"
 
- 	include "\SrcAll\BasicFunctions.asm"
-	include "\SrcAll\V1_MaxTile_Expanders.asm"
+ 	include "SrcAll/BasicFunctions.asm"
+	include "SrcAll/V1_MaxTile_Expanders.asm"
 
 	
 PatternFill:

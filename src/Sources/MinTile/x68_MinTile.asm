@@ -2,7 +2,7 @@
 ScreenBase equ $c00000+(1024*16)
 
 
-	include "\SrcAll\BasicMacros.asm"
+	include "SrcAll/BasicMacros.asm"
 		
 TileSmoothXmove equ 1	;move in blocks <8 pixels
 TileSmoothYmove equ 1	;This would just waste cpu power
@@ -383,7 +383,7 @@ TileDoneRev:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	
 
-	include "/srcALL/V1_MinimalTile.asm"
+	include "srcALL/V1_MinimalTile.asm"
 
 TestSprite:
 	incbin "\ResALL\Yquest\MSX2_Yquest.raw"

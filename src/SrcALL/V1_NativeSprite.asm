@@ -24,22 +24,22 @@ vecNS:
 	dc.l nativespr_hideAllForBackground_Reikou
 	
 	ifd BuildNEO
-		include "\SrcNEO\NEO_V1_NativeSprite.asm"	;Put before Adventure Engine inc
+		include "SrcNEO/NEO_V1_NativeSprite.asm"	;Put before Adventure Engine inc
 	endif
 	ifd BuildX68
-		include "\SrcX68\X68_V1_NativeSprite.asm"	;Put before Adventure Engine inc
+		include "SrcX68/X68_V1_NativeSprite.asm"	;Put before Adventure Engine inc
 	endif
 	ifd BuildGEN
-		include "\SrcGEN\GEN_V1_NativeSprite.asm"	;Put before Adventure Engine inc
+		include "SrcGEN/GEN_V1_NativeSprite.asm"	;Put before Adventure Engine inc
 	endif
 	ifd BuildSQL
-		include "\SrcSQL\SQL_V1_NativeSprite.asm"	;Put before Adventure Engine inc
+		include "SrcSQL/SQL_V1_NativeSprite.asm"	;Put before Adventure Engine inc
 	endif
 	ifd BuildAMI
-		include "\SrcAMI\AMI_V1_NativeSprite.asm"	;Put before Adventure Engine inc
+		include "SrcAMI/AMI_V1_NativeSprite.asm"	;Put before Adventure Engine inc
 	endif
 	ifd BuildAST
-		include "\SrcAST\AST_V1_NativeSprite.asm"	;Put before Adventure Engine inc
+		include "SrcAST/AST_V1_NativeSprite.asm"	;Put before Adventure Engine inc
 	endif
 	
 	

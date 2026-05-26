@@ -1,4 +1,4 @@
-	include "\SrcALL\BasicMacros.asm"
+	include "SrcALL/BasicMacros.asm"
 
 CollisionMaskY equ %11111000	;Masks for un-drawable co-ordinates 
 CollisionMaskX equ %11111100
@@ -528,10 +528,10 @@ VDPSettingsEnd:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 	include "YQ_Multiplatform.asm"
-	include "\SrcALL\V1_ChibiSound.asm"
-	include "\SrcALL\Multiplatform_BCD.asm"
-	include "\SrcALL\BasicFunctions.asm"	
-	include "\SrcALL\MultiPlatform_ShowDecimal.asm"
+	include "SrcALL/V1_ChibiSound.asm"
+	include "SrcALL/Multiplatform_BCD.asm"
+	include "SrcALL/BasicFunctions.asm"	
+	include "SrcALL/MultiPlatform_ShowDecimal.asm"
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	

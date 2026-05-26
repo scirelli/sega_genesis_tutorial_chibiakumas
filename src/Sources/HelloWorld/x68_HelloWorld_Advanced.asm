@@ -1,5 +1,5 @@
 
-	include "\SrcALL\BasicMacros.asm"	;Needed by Monitor Tools
+	include "SrcALL/BasicMacros.asm"	;Needed by Monitor Tools
 	
 	lea Message,a3
 	jsr PrintString			;Show String Message
@@ -44,5 +44,5 @@ PrintString:
 PrintString_Done:		
 	rts
 	
-	include "\SrcALL\Multiplatform_Monitor.asm"
+	include "SrcALL/Multiplatform_Monitor.asm"
 	

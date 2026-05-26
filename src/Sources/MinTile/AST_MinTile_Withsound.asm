@@ -3,7 +3,7 @@
 	
 
 
-	include "\SrcAll\BasicMacros.asm"
+	include "SrcAll/BasicMacros.asm"
 		
 TileSmoothXmove equ 1	;move in blocks <8 pixels
 TileSmoothYmove equ 1	;This would just waste cpu power
@@ -469,7 +469,7 @@ EmptyTileRev:
 
 	
 
-	include "/srcALL/V1_MinimalTile.asm"
+	include "srcALL/V1_MinimalTile.asm"
 
 TestSprite:
 	incbin "\ResALL\Yquest\AST_YQuest.RAW"
@@ -601,11 +601,11 @@ IkbdVector:	dc.l 0 			; original IKBD vector storage
 OldJoyVec:	dc.l 0    		; original joy vector storage
 Joystickdata:ds.b 2			;Joypad bits F---RLDU 
 
-	include "\SrcALL\Multiplatform_ChibiTracks.asm"
-	include "\SrcALL\Multiplatform_ChibiTracks_Tweener.asm"
-	include "\SrcALL\Multiplatform_Fraction16.asm"
-	include "\SrcALL\BasicFunctions.asm"
-	include "\SrcALL\V1_ChibiSoundPro.asm"
+	include "SrcALL/Multiplatform_ChibiTracks.asm"
+	include "SrcALL/Multiplatform_ChibiTracks_Tweener.asm"
+	include "SrcALL/Multiplatform_Fraction16.asm"
+	include "SrcALL/BasicFunctions.asm"
+	include "SrcALL/V1_ChibiSoundPro.asm"
 		
 Song1:
 	;incbin "\ResAll\ChibiSoundPro\Song1000.cbt"

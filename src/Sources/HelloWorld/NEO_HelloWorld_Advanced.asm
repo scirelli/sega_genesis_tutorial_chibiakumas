@@ -1,4 +1,4 @@
-	include "\SrcALL\BasicMacros.asm"		;Needed for Monitor
+	include "SrcALL/BasicMacros.asm"		;Needed for Monitor
 	
 
 flag_VBlank	equ  $100000   	;(byte) vblank flag in ram
@@ -294,5 +294,5 @@ nextpixel_Xok:
 	rts
 
 	
-	include "\SrcALL\Multiplatform_Monitor.asm"
+	include "SrcALL/Multiplatform_Monitor.asm"
 	

@@ -153,8 +153,8 @@ Use16ColorGraphics equ 1
 	
 	include "header.asm"
 	
-	include "\SrcALL\ChibiVm_InstSet.asm"
-	include "\SrcALL\BasicMacros.asm"
+	include "SrcALL/ChibiVm_InstSet.asm"
+	include "SrcALL/BasicMacros.asm"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	
@@ -341,35 +341,35 @@ Font10Bit:	;10x10 Don't save Part bytes!
 		
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
-	;include "\SrcALL\V1_NativeSprite.asm"	
+	;include "SrcALL/V1_NativeSprite.asm"	
 	even
 	
-	;include "\SrcALL\Multiplatform_RLE.asm"
+	;include "SrcALL/Multiplatform_RLE.asm"
 	
-	include "..\ChibiVM\Multiplatform_MonitorA.asm"
+	include "../ChibiVM/Multiplatform_MonitorA.asm"
 	
 	include "AdventureEngineX_Monitor.asm"
 	
 ;	include "ChibiVM_AdvMathsBCD.asm"
 ;	include "ChibiVM_AdvMaths.asm"
 ;	include "ChibiVM_AdvancedInput.asm"
-;	include "\SrcALL\Multiplatform_OSK.asm"
+;	include "SrcALL/Multiplatform_OSK.asm"
 	
-	include "\SrcAll\V1_Palette.asm"
+	include "SrcAll/V1_Palette.asm"
 	
-;	include "\Sources\ReiKou\Reikou_ALL_MultiplatformBitmap2.asm"
-	include "\Sources\ReiKou\Reikou_ALL_MultiplatformBitmap.asm"
+;	include "Sources/ReiKou/Reikou_ALL_MultiplatformBitmap2.asm"
+	include "Sources/ReiKou/Reikou_ALL_MultiplatformBitmap.asm"
 
 	even
 	include "AdventureEngine_PrintW.asm"
 	include "ChibiVM_QTV_Minimal.asm"
-	include "\SrcAll\V1_QuadTreeVideoGeneric16color.asm"
+	include "SrcAll/V1_QuadTreeVideoGeneric16color.asm"
 	;include "ChibiVM_RLE.asm"
 	include "ChibiVM_AdventureEngineX.asm"	;Must come before  ChibiVM_AdventureEngine.asm
-	;include "\SrcALL\V1_GenericAnimator.asm"	;Must come before  ChibiVM_AdventureEngine.asm
+	;include "SrcALL/V1_GenericAnimator.asm"	;Must come before  ChibiVM_AdventureEngine.asm
 	include "AdventureEngineX.asm"				;Must come before  ChibiVM_AdventureEngine.asm
 	include "ChibiVM_AdventureEngine.asm"
-	include "\Sources\ChibiVM\ChibiVM_Host.asm"
+	include "Sources/ChibiVM/ChibiVM_Host.asm"
 
 	
 	
@@ -1849,19 +1849,19 @@ MapSeq:
 Sequence:
 	ifd VideoFx16
 		ifnd UseHQGraphics	
-			include "\ResALL\Reikou\ShindeKure\Images16_FrameDefs.asm"
-			include "\ResALL\Reikou\ShindeKure\Images16_FrameList.asm"
+			include "ResALL/Reikou/ShindeKure/Images16_FrameDefs.asm"
+			include "ResALL/Reikou/ShindeKure/Images16_FrameList.asm"
 		else 
-			include "\ResALL\Reikou\ShindeKure\Images16HQ_FrameDefs.asm"
-			include "\ResALL\Reikou\ShindeKure\Images16HQ_FrameList.asm"
+			include "ResALL/Reikou/ShindeKure/Images16HQ_FrameDefs.asm"
+			include "ResALL/Reikou/ShindeKure/Images16HQ_FrameList.asm"
 		endif 
 	else 
 		ifnd UseHQGraphics
-			include "\ResALL\Reikou\ShindeKure\Images_FrameDefs.asm"
-			include "\ResALL\Reikou\ShindeKure\Images_FrameList.asm"
+			include "ResALL/Reikou/ShindeKure/Images_FrameDefs.asm"
+			include "ResALL/Reikou/ShindeKure/Images_FrameList.asm"
 		else 
-			include "\ResALL\Reikou\ShindeKure\Images4HQ_FrameDefs.asm"
-			include "\ResALL\Reikou\ShindeKure\Images4HQ_FrameList.asm"		
+			include "ResALL/Reikou/ShindeKure/Images4HQ_FrameDefs.asm"
+			include "ResALL/Reikou/ShindeKure/Images4HQ_FrameList.asm"		
 		endif 
 	endif 
 	
@@ -1922,7 +1922,7 @@ VM_RamBaseAddr: dc.l VM_RamBase2+65536
 	
 	
 	even
-	include "\SrcALL\ChibiVm_CPU.asm"		
+	include "SrcALL/ChibiVm_CPU.asm"		
 	
 	
 	even

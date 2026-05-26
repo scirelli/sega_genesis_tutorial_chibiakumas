@@ -2,7 +2,7 @@
 ScreenBase equ screen_mem+4
 
 
-	include "\SrcAll\BasicMacros.asm"
+	include "SrcAll/BasicMacros.asm"
 		
 TileSmoothXmove equ 1	;move in blocks <8 pixels
 TileSmoothYmove equ 1	;This would just waste cpu power
@@ -675,7 +675,7 @@ EmptyTileRev:
 
 	
 
-	include "/srcALL/V1_MinimalTile.asm"
+	include "srcALL/V1_MinimalTile.asm"
 
 Tilemap2
 	dc.b 2,2,2,2,3,3,3,3,2,2,2,2,3,3,3,3,2,2,2,2,3,3,3,3,2,2,2,2,3,3,3,3,01,2,1,1
@@ -808,19 +808,19 @@ gfxbase:	dc.l 0
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-	include "\SrcALL\Multiplatform_ChibiTracks.asm"
-	include "\SrcALL\Multiplatform_ChibiTracks_Tweener.asm"
-	include "\SrcALL\Multiplatform_Fraction16.asm"
-	include "\SrcALL\BasicFunctions.asm"
-	include "\SrcALL\V1_ChibiSoundPro.asm"
+	include "SrcALL/Multiplatform_ChibiTracks.asm"
+	include "SrcALL/Multiplatform_ChibiTracks_Tweener.asm"
+	include "SrcALL/Multiplatform_Fraction16.asm"
+	include "SrcALL/BasicFunctions.asm"
+	include "SrcALL/V1_ChibiSoundPro.asm"
 	
 Song1:
 	;incbin "\ResAll\ChibiSoundPro\Song1000.cbt"
-	;include "\ResAll\ChibiSoundPro\CBT1.asm"
+	;include "ResAll/ChibiSoundPro/CBT1.asm"
 	;incbin "\ResAll\ChibiSoundPro\song.cbt"
 	;incbin "\ResAll\ChibiSoundPro\song2.cbt"
 	incbin "\ResAll\ChibiSoundPro\ChibiAkumasTheme.cbt"
-	;include "\ResAll\ChibiSoundPro\Song2.asm"
+	;include "ResAll/ChibiSoundPro/Song2.asm"
 	even
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

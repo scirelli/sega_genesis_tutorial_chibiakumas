@@ -1,5 +1,5 @@
 
-	include "\SrcALL\BasicMacros.asm"	;Needed by Monitor Tools
+	include "SrcALL/BasicMacros.asm"	;Needed by Monitor Tools
 
 	;Press F12 to capture mouse in the emulator!
 	
@@ -82,5 +82,5 @@ PrintString:
 PrintString_Done:		
 	rts
 	
-	include "\SrcALL\Multiplatform_Monitor.asm"
+	include "SrcALL/Multiplatform_Monitor.asm"
 	

@@ -34,7 +34,7 @@ spritehclip   	  equ $10050A
 HSpriteNum		  equ $10050B
 
 
-	include "\SrcAll\BasicMacros.asm"
+	include "SrcAll/BasicMacros.asm"
 		
 TileSmoothXmove equ 1	;move in blocks <8 pixels
 TileSmoothYmove equ 1	;This would just waste cpu power
@@ -875,7 +875,7 @@ EmptyTileSprRev:
 
 	
 
-	include "/srcALL/V1_MinimalTile.asm"
+	include "srcALL/V1_MinimalTile.asm"
 	
 Bitmap:
 	incbin "\ResALL\Yquest\MSX2_Yquest.RAW"
@@ -964,17 +964,17 @@ Palette:
     dc.w $00FF; ;14  -RGB
     dc.w $0FFF; ;15  -RGB
 
-	include "\SrcALL\BasicFunctions.asm"
+	include "SrcALL/BasicFunctions.asm"
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;Platform sound driver
-	include "\SrcALL\V1_ChibiSoundPro.asm"
+	include "SrcALL/V1_ChibiSoundPro.asm"
 
 ;Music player
-	include "\SrcALL\Multiplatform_ChibiTracks.asm"
-	include "\SrcALL\Multiplatform_ChibiTracks_Tweener.asm"
-	include "\SrcALL\Multiplatform_Fraction16.asm"
+	include "SrcALL/Multiplatform_ChibiTracks.asm"
+	include "SrcALL/Multiplatform_ChibiTracks_Tweener.asm"
+	include "SrcALL/Multiplatform_Fraction16.asm"
 	
 
 ;Song to play

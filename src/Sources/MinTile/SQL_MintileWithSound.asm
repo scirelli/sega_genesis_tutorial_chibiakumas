@@ -2,7 +2,7 @@
 ScreenBase equ $00020000+(128*32)
 
 
-	include "\SrcAll\BasicMacros.asm"
+	include "SrcAll/BasicMacros.asm"
 		
 TileSmoothXmove equ 1	;move in blocks <8 pixels
 TileSmoothYmove equ 1	;This would just waste cpu power
@@ -356,7 +356,7 @@ ReadJoystick:
 		rts
 		
 
-	include "/srcALL/V1_MinimalTile.asm"
+	include "srcALL/V1_MinimalTile.asm"
 
 DoStripRev:
 	move.l #FlipLUT,a1
@@ -549,11 +549,11 @@ spritehclip: dc.l 0
 
 
 
-	include "\SrcALL\Multiplatform_ChibiTracks.asm"
-	include "\SrcALL\Multiplatform_ChibiTracks_Tweener.asm"
-	include "\SrcALL\Multiplatform_Fraction16.asm"
-	include "\SrcALL\BasicFunctions.asm"
-	include "\SrcALL\V1_ChibiSoundPro.asm"
+	include "SrcALL/Multiplatform_ChibiTracks.asm"
+	include "SrcALL/Multiplatform_ChibiTracks_Tweener.asm"
+	include "SrcALL/Multiplatform_Fraction16.asm"
+	include "SrcALL/BasicFunctions.asm"
+	include "SrcALL/V1_ChibiSoundPro.asm"
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Structure to define an interrupt handler
@@ -578,11 +578,11 @@ InterruptHandler:
 	
 Song1:
 	;incbin "\ResAll\ChibiSoundPro\Song1000.cbt"
-	;include "\ResAll\ChibiSoundPro\CBT1.asm"
+	;include "ResAll/ChibiSoundPro/CBT1.asm"
 	;incbin "\ResAll\ChibiSoundPro\song.cbt"
 	;incbin "\ResAll\ChibiSoundPro\song2.cbt"
 	incbin "\ResAll\ChibiSoundPro\ChibiAkumasTheme.cbt"
-	;include "\ResAll\ChibiSoundPro\Song2.asm"
+	;include "ResAll/ChibiSoundPro/Song2.asm"
 	even
 
 

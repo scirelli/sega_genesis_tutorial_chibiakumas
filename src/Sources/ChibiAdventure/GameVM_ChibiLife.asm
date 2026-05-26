@@ -75,8 +75,8 @@ VscreenHei equ 96
 
 	include "header.asm"
 	
-	include "\SrcALL\ChibiVm_InstSet.asm"
-	include "\SrcALL\BasicMacros.asm"
+	include "SrcALL/ChibiVm_InstSet.asm"
+	include "SrcALL/BasicMacros.asm"
 
 	ifd BuildAMI
 
@@ -324,29 +324,29 @@ VM_Run:
 		
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
-	include "\SrcALL\V1_NativeSprite.asm"	
+	include "SrcALL/V1_NativeSprite.asm"	
 	even
 	
 	
 	
-	include "..\ChibiVM\Multiplatform_MonitorA.asm"
+	include "../ChibiVM/Multiplatform_MonitorA.asm"
 	
-	include "\Sources\ReiKou\Reikou_ALL_MaxTile.asm"
+	include "Sources/ReiKou/Reikou_ALL_MaxTile.asm"
 	include "AdventureEngineX_Monitor.asm"
 	
 	
 	include "ChibiVM_AdventureEngineX.asm"	;Must come before  ChibiVM_AdventureEngine.asm
-	include "\SrcALL\V1_GenericAnimator.asm"	;Must come before  ChibiVM_AdventureEngine.asm
+	include "SrcALL/V1_GenericAnimator.asm"	;Must come before  ChibiVM_AdventureEngine.asm
 	include "AdventureEngineX.asm"				;Must come before  ChibiVM_AdventureEngine.asm
 	include "ChibiVM_AdventureEngine.asm"
-	include "\Sources\ChibiVM\ChibiVM_Host.asm"
+	include "Sources/ChibiVM/ChibiVM_Host.asm"
 
 	
 	
 	
 	
 	;ifdef DoubleBuffered
-		include "\SrcAll\V1_MaxTile_DirectDriver.asm"
+		include "SrcAll/V1_MaxTile_DirectDriver.asm"
 	;else
 		;read "\SrcAll\V1_MaxTile_CacheDriver.asm"
 	;endif 
@@ -1653,7 +1653,7 @@ VM_RamBaseAddr: dc.l VM_RamBase2+65536
 	
 	even
 	
-	include "\SrcALL\ChibiVm_CPU.asm"		
+	include "SrcALL/ChibiVm_CPU.asm"		
 
 	
 	even

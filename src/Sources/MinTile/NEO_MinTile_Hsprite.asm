@@ -20,7 +20,7 @@ spritehclip   	  equ $10050A
 HSpriteNum		  equ $10050B
 
 
-	include "\SrcAll\BasicMacros.asm"
+	include "SrcAll/BasicMacros.asm"
 		
 TileSmoothXmove equ 1	;move in blocks <8 pixels
 TileSmoothYmove equ 1	;This would just waste cpu power
@@ -793,7 +793,7 @@ EmptyTileSprRev:
 
 	
 
-	include "/srcALL/V1_MinimalTile.asm"
+	include "srcALL/V1_MinimalTile.asm"
 	
 Bitmap:
 	incbin "\ResALL\Yquest\MSX2_Yquest.RAW"

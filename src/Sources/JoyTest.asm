@@ -5,8 +5,8 @@
 Cursor_X equ UserRam
 Cursor_Y equ UserRam+2
 
-	include "\SrcALL\BasicMacros.asm"
-	include "\SrcALL\V1_Header.asm"
+	include "SrcALL/BasicMacros.asm"
+	include "SrcALL/V1_Header.asm"
 
 	jsr KeyboardScanner_AllowJoysticks	;Turn on joysticks on systems that need init
 	
@@ -22,14 +22,14 @@ KAgain:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	
-	include "\SrcALL\V1_ReadJoystick.asm"
-	include "\SrcALL\V1_Palette.asm"
-	include "\SrcALL\V1_BitmapMemory.asm"
-	include "\SrcALL\V1_VdpMemory.asm"
-	include "\SrcALL\V1_Functions.asm"
-	include "\SrcALL\Multiplatform_Monitor.asm"
+	include "SrcALL/V1_ReadJoystick.asm"
+	include "SrcALL/V1_Palette.asm"
+	include "SrcALL/V1_BitmapMemory.asm"
+	include "SrcALL/V1_VdpMemory.asm"
+	include "SrcALL/V1_Functions.asm"
+	include "SrcALL/Multiplatform_Monitor.asm"
 	
-	include "\SrcALL\V1_DataArea.asm"
+	include "SrcALL/V1_DataArea.asm"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;				Data Area
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
@@ -82,9 +82,9 @@ Palette:
 
 Message: dc.b 'Hello World?!!',255
 	even
-	include "\SrcALL\V1_RamArea.asm"
+	include "SrcALL/V1_RamArea.asm"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;				Ram Area - May not be possible on all systems!!!
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
-	include "\SrcALL\V1_Footer.asm"
+	include "SrcALL/V1_Footer.asm"

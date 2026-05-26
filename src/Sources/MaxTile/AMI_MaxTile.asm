@@ -2,7 +2,7 @@
 ScreenBase equ screen_mem+4
 
 
-	include "\SrcAll\BasicMacros.asm"
+	include "SrcAll/BasicMacros.asm"
 		
 ;tiletest_basiconly equ 1
 ;slowdowntest equ 1
@@ -334,7 +334,7 @@ VblankDone:
 	
 	
 
-	;include "\SrcX68\X68_V1_MaxTile_Normal.asm"
+	;include "SrcX68/X68_V1_MaxTile_Normal.asm"
 		
 	
 ;Addr = ScreenMem + (Ypos * 40) + Xpos
@@ -356,24 +356,24 @@ VblankDone:
 			
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	
-		include "\SrcAMI\AMI_V1_MaxTile_Normal.asm"
-	;include "\SrcAMI\AMI_V1_MaxTile_Shifted.asm"
+		include "SrcAMI/AMI_V1_MaxTile_Normal.asm"
+	;include "SrcAMI/AMI_V1_MaxTile_Shifted.asm"
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	
 
 
 	ifd DoubleBuffered
-		include "\SrcAll\V1_MaxTile_DirectDriver.asm"
+		include "SrcAll/V1_MaxTile_DirectDriver.asm"
 	else
-		include "\SrcAll\V1_MaxTile_CacheDriver.asm"
+		include "SrcAll/V1_MaxTile_CacheDriver.asm"
 	endif 
 
- 	include "\SrcAll\V1_MaxTile.asm"
+ 	include "SrcAll/V1_MaxTile.asm"
 
 	include "MaxTile_Test1.asm"
 
- 	include "\SrcAll\BasicFunctions.asm"
+ 	include "SrcAll/BasicFunctions.asm"
 
 PatternFill:
 	dc.b $00,$00,$00,$00

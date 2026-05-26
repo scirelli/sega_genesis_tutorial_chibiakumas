@@ -537,21 +537,21 @@ FillLut:
 
 
 	ifd BuildGEN
-		include "\Sources\Reikou\Reikou_GEN_MaxTile.asm"
+		include "Sources/Reikou/Reikou_GEN_MaxTile.asm"
 	endif
 	ifd BuildX68
-		include "\Sources\Reikou\Reikou_X68_MaxTile.asm"
+		include "Sources/Reikou/Reikou_X68_MaxTile.asm"
 	endif
 	ifd BuildSQL
-		include "\Sources\Reikou\Reikou_SQL_MaxTile.asm"
+		include "Sources/Reikou/Reikou_SQL_MaxTile.asm"
 	endif
 	
 	ifd BuildAST
-		include "\Sources\Reikou\Reikou_AST_MaxTile.asm"
+		include "Sources/Reikou/Reikou_AST_MaxTile.asm"
 	endif
 	ifd BuildAMI
-		include "\Sources\Reikou\Reikou_AMI_MaxTile.asm"
+		include "Sources/Reikou/Reikou_AMI_MaxTile.asm"
 	endif
 	ifd BuildNEO
-		include "\Sources\Reikou\Reikou_NEO_MaxTile.asm"
+		include "Sources/Reikou/Reikou_NEO_MaxTile.asm"
 	endif

@@ -1,5 +1,5 @@
 
-	include "\SrcALL\BasicMacros.asm" ;Needed for Monitor
+	include "SrcALL/BasicMacros.asm" ;Needed for Monitor
 	
 	SECTION TEXT		;CODE Section
 	
@@ -52,5 +52,5 @@ PrintString_Done:
 	rts
 	
 
-	include "\SrcALL\Multiplatform_Monitor.asm"
+	include "SrcALL/Multiplatform_Monitor.asm"
 	

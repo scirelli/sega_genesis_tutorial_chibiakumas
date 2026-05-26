@@ -4,8 +4,8 @@ Cursor_Y equ UserRam+1
 ChibiSoundUseFM equ 1 	;Only for genesis
 ;ChibiSoundUseFMZ80 equ 1	;only for genesis
 	
-	include "\SrcALL\V1_Header.asm"
-	include "\SrcALL\BasicMacros.asm"
+	include "SrcALL/V1_Header.asm"
+	include "SrcALL/BasicMacros.asm"
 	
 	ifd ChibiSoundUseFMZ80		;Need Init on SNS
 		jsr ChibiSound_INIT
@@ -52,14 +52,14 @@ Pauser:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	
-	include "\SrcAll\V1_ChibiSound.asm"
+	include "SrcAll/V1_ChibiSound.asm"
 	
-	include "\SrcALL\V1_BitmapMemory.asm"
-	include "\SrcALL\V1_VdpMemory.asm"
-	include "\SrcALL\V1_Functions.asm"
-	include "\SrcALL\Multiplatform_Monitor.asm"
+	include "SrcALL/V1_BitmapMemory.asm"
+	include "SrcALL/V1_VdpMemory.asm"
+	include "SrcALL/V1_Functions.asm"
+	include "SrcALL/Multiplatform_Monitor.asm"
 	
-	include "\SrcALL\V1_DataArea.asm"
+	include "SrcALL/V1_DataArea.asm"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;				Data Area
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
@@ -73,7 +73,7 @@ Message: dc.b 'Hello World!!!',255
 	even
 
 
-	include "\SrcALL\V1_RamArea.asm"
+	include "SrcALL/V1_RamArea.asm"
 	
 wavNoise:	;Random noise
 	dc.b	195,184, 71, 82,141,186, 62,131
@@ -89,4 +89,4 @@ wavToneEnd
 ;				Ram Area - May not be possible on all systems!!!
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
-	include "\SrcALL\V1_Footer.asm"
+	include "SrcALL/V1_Footer.asm"

@@ -1,7 +1,7 @@
 
 ScreenBase equ screen_mem+4
 
-	include "\SrcAMI\AMI_V1_MaxTile_Normal.asm"
+	include "SrcAMI/AMI_V1_MaxTile_Normal.asm"
 	
 	
 ;                                     initmaxtile:

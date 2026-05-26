@@ -1,7 +1,7 @@
 
 ScreenBase equ $00020000+(128*32)	;Topleft corner of the 256x192 screen
 
-	include "\SrcSQL\SQL_V1_MaxTile_Normal.asm"
+	include "SrcSQL/SQL_V1_MaxTile_Normal.asm"
 	
 	
 ;                                     initmaxtile:

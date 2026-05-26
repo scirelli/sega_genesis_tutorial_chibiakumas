@@ -69,7 +69,7 @@ BackgroundTilemapWidthV equ 36
 
 
 
-	include "\SrcAll\BasicMacros.asm"
+	include "SrcAll/BasicMacros.asm"
 		
 
 
@@ -158,23 +158,23 @@ GetScreenPos: 					;d1=x d2=y (in pairs of pixels)
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	
-	include "\SrcX68\X68_V1_MaxTile_Normal.asm"
+	include "SrcX68/X68_V1_MaxTile_Normal.asm"
 	
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	
 
 	ifd DoubleBuffered
-		include "\SrcAll\V1_MaxTile_DirectDriver.asm"
+		include "SrcAll/V1_MaxTile_DirectDriver.asm"
 	else
-		include "\SrcAll\V1_MaxTile_CacheDriver.asm"
+		include "SrcAll/V1_MaxTile_CacheDriver.asm"
 	endif 
 
- 	include "\SrcAll\V1_MaxTile.asm"
+ 	include "SrcAll/V1_MaxTile.asm"
 
 	include "MaxTile_Test1.asm"
 
- 	include "\SrcAll\BasicFunctions.asm"
+ 	include "SrcAll/BasicFunctions.asm"
 
 	
 patterndata:

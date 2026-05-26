@@ -1,9 +1,9 @@
 ;compile with option: VASM GEN
 
-	include "\Sources\ChibiAdventure\header.asm"
+	include "Sources/ChibiAdventure/header.asm"
 	
-	include "\SrcALL\ChibiVm_InstSet.asm"
-	include "\SrcALL\BasicMacros.asm"
+	include "SrcALL/ChibiVm_InstSet.asm"
+	include "SrcALL/BasicMacros.asm"
 		
 vmAddressRemap_BigEndian equ 1			;Little endian calculations won't work due to relocatable code
 
@@ -75,12 +75,12 @@ vecNS:
 	
 
 	;include "NativeSprite.asm"
-	include "\SrcX68\V1_NativeSprite.asm"	;Put before Adventure Engine inc
+	include "SrcX68/V1_NativeSprite.asm"	;Put before Adventure Engine inc
 	
 	
-	include "..\ChibiVM\Multiplatform_MonitorA.asm"
-	include "\Sources\ChibiAdventure\ChibiVM_AdventureEngine.asm"
-	include "\Sources\ChibiVM\ChibiVM_Host.asm"
+	include "../ChibiVM/Multiplatform_MonitorA.asm"
+	include "Sources/ChibiAdventure/ChibiVM_AdventureEngine.asm"
+	include "Sources/ChibiVM/ChibiVM_Host.asm"
 	
 	
 	
@@ -318,12 +318,12 @@ HSprites:
 HSprites_end:
 
 
-	include "\SrcALL\ChibiVm_CPU.asm"		
+	include "SrcALL/ChibiVm_CPU.asm"		
 	
 	even
 
-	include "\Sources\ChibiAdventure\core.asm"
-	include "\Sources\ChibiAdventure\footer.asm"
+	include "Sources/ChibiAdventure/core.asm"
+	include "Sources/ChibiAdventure/footer.asm"
 	
 	align 8
 	

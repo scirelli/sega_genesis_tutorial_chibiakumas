@@ -71,7 +71,7 @@ BackgroundTilemapWidthV equ 36
 
 
 
-	include "\SrcAll\BasicMacros.asm"
+	include "SrcAll/BasicMacros.asm"
 		
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
@@ -406,12 +406,12 @@ GetScreenPos:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	
 	
- 	;include "\SrcAll\V1_MinimalTile.asm"
+ 	;include "SrcAll/V1_MinimalTile.asm"
 
 	ifd DoubleBuffered
-		include "\SrcAll\V1_MaxTile_DirectDriver.asm"
+		include "SrcAll/V1_MaxTile_DirectDriver.asm"
 	else
-		include "\SrcAll\V1_MaxTile_CacheDriver.asm"
+		include "SrcAll/V1_MaxTile_CacheDriver.asm"
 	endif 
 
 	
@@ -436,9 +436,9 @@ FillData:
 	;ifd HiresY
 ;		read "\SrcCPC\CPC_V1_MaxTile_HalfShift.asm";
 	;endif
-	;include "\SrcAll\V1_MaxTile_Expanders.asm"
+	;include "SrcAll/V1_MaxTile_Expanders.asm"
 
- 	include "\SrcAll\V1_MaxTile.asm"
+ 	include "SrcAll/V1_MaxTile.asm"
 
 	
 ;A4=IX
@@ -658,7 +658,7 @@ drawtilefill:
 	
 	
 	
- 	include "\SrcAll\BasicFunctions.asm"
+ 	include "SrcAll/BasicFunctions.asm"
 
 	include "MaxTile_Test1.asm"
 

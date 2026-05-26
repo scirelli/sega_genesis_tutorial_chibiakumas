@@ -1,6 +1,6 @@
 ;ScreenBase equ $c00000+(1024*16)	;VRAM destination for full redraw
 
-	include "\SrcAST\AST_V1_MaxTile_Normal.asm"
+	include "SrcAST/AST_V1_MaxTile_Normal.asm"
 	
 	
 ;                                     initmaxtile:

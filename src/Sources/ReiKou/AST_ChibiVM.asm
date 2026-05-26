@@ -13,10 +13,10 @@ vmAddressRemap_BigEndian equ 1			;Little endian calculations won't work due to r
 
 ;compile with option: VASM GEN
 
-	include "\Sources\ChibiAdventure\header.asm"
+	include "Sources/ChibiAdventure/header.asm"
 	
-	include "\SrcALL\ChibiVm_InstSet.asm"
-	include "\SrcALL\BasicMacros.asm"
+	include "SrcALL/ChibiVm_InstSet.asm"
+	include "SrcALL/BasicMacros.asm"
 
 	ifd BuildSQL
 VM_RamBase equ $30000
@@ -104,11 +104,11 @@ vecNS:
 	dc.l DummySyscall ;dw NativeSpr_ClearUnused ;5
 	dc.l nativespr_hideAll_Reikou
 	
-	include "\SrcAST\V1_NativeSprite.asm"	;Put before Adventure Engine inc
+	include "SrcAST/V1_NativeSprite.asm"	;Put before Adventure Engine inc
 	
-	include "..\ChibiVM\Multiplatform_MonitorA.asm"
-	include "\Sources\ChibiAdventure\ChibiVM_AdventureEngine.asm"
-	include "\Sources\ChibiVM\ChibiVM_Host.asm"
+	include "../ChibiVM/Multiplatform_MonitorA.asm"
+	include "Sources/ChibiAdventure/ChibiVM_AdventureEngine.asm"
+	include "Sources/ChibiVM/ChibiVM_Host.asm"
 	
 	
 	
@@ -987,11 +987,11 @@ VM_HostRam:
 	endif
 	
 	even
-	include "\SrcALL\ChibiVm_CPU.asm"		
+	include "SrcALL/ChibiVm_CPU.asm"		
 	
 	even
-	include "\Sources\ChibiAdventure\core.asm"
-	include "\Sources\ChibiAdventure\footer.asm"
+	include "Sources/ChibiAdventure/core.asm"
+	include "Sources/ChibiAdventure/footer.asm"
 	
 	
 	;Variables for our Emulator

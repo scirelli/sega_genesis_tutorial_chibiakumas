@@ -1,5 +1,5 @@
 
-	include "\SrcAll\BasicMacros.asm"
+	include "SrcAll/BasicMacros.asm"
 		
 ;tiletest_basiconly equ 1
 ;slowdowntest equ 1
@@ -186,7 +186,7 @@ VblankDone:
 	
 	
 	
-	include "\SrcAST\AST_V1_MaxTile_Normal.asm"
+	include "SrcAST/AST_V1_MaxTile_Normal.asm"
 	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	
@@ -194,16 +194,16 @@ VblankDone:
 
 
 	ifd DoubleBuffered
-		include "\SrcAll\V1_MaxTile_DirectDriver.asm"
+		include "SrcAll/V1_MaxTile_DirectDriver.asm"
 	else
-		include "\SrcAll\V1_MaxTile_CacheDriver.asm"
+		include "SrcAll/V1_MaxTile_CacheDriver.asm"
 	endif 
 
- 	include "\SrcAll\V1_MaxTile.asm"
+ 	include "SrcAll/V1_MaxTile.asm"
 
 	include "MaxTile_Test1.asm"
 
- 	include "\SrcAll\BasicFunctions.asm"
+ 	include "SrcAll/BasicFunctions.asm"
 
 PatternFill:
 	dc.b $00,$00,$00,$00

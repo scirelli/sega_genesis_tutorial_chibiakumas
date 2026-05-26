@@ -1,7 +1,7 @@
 
 
 
-	include "\SrcAll\BasicMacros.asm"
+	include "SrcAll/BasicMacros.asm"
 		
 TileSmoothXmove equ 1	;move in blocks <8 pixels
 TileSmoothYmove equ 1	;This would just waste cpu power
@@ -424,7 +424,7 @@ EmptyTileRev:
 	
 	
 
-	include "/srcALL/V1_MinimalTile.asm"
+	include "srcALL/V1_MinimalTile.asm"
 
 TestSprite:
 	incbin "\ResALL\Yquest\AST_YQuest.RAW"

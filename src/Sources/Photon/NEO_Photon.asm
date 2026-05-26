@@ -1,4 +1,4 @@
-	include "\SrcALL\BasicMacros.asm"
+	include "SrcALL/BasicMacros.asm"
 
 Color1 equ 1				;Color palette
 Color2 equ 2				;These are color attributes
@@ -13,7 +13,7 @@ ScreenHeight equ 124		;each tile is 2x4 pixels
 UserRam equ  $100200		;Game Ram Area
 
 
-	include "\SrcALL\BasicMacros.asm"
+	include "SrcALL/BasicMacros.asm"
 	
 	
 flag_VBlank	equ  $100000   	;(byte) vblank flag in ram
@@ -620,13 +620,13 @@ Palette:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
 	even
-	include "\ResAll\Vector\VectorFont.asm"
+	include "ResAll/Vector/VectorFont.asm"
 	
 	include "PH_Title.asm"
 	even
 	
-	include "\SrcALL\BasicFunctions.asm"	
-	include "\SrcALL\MultiPlatform_ShowDecimal.asm"
+	include "SrcALL/BasicFunctions.asm"	
+	include "SrcALL/MultiPlatform_ShowDecimal.asm"
 	include "PH_DataDefs.asm"
 	include "PH_RamDefs.asm"
 	
@@ -636,4 +636,4 @@ Palette:
 	even
 	
 	
-	;include "\SrcALL\V1_Footer.asm"
+	;include "SrcALL/V1_Footer.asm"
