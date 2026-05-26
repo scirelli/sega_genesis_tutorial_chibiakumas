@@ -124,7 +124,7 @@ MonitorD0:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 	ifnd BuildNEO			;NeoGeo Doesn't use font or Tiles (they are in the fixmap)
 Font:
-		incbin "\ResALL\Font96.FNT"
+		incbin "resall/Font96.FNT"
 	endif
 
 
