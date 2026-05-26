@@ -13,7 +13,7 @@ ShowReg:
 		;bsr PrintHex	
 		
 PrintHex:
-	pushall
+	PushAll
 		move.w d0,d2
 		move.w d2,d1
 		and.w #%11110000,d1
@@ -23,8 +23,9 @@ PrintHex:
 		move.w d2,d1
 		and.w #%00001111,d1
 		bsr PrintHexChar	
-	popall
+	PopAll
 	rts
+
 PrintHexChar:	
 	move.w d1,d0
 	and.l #$FF,d0

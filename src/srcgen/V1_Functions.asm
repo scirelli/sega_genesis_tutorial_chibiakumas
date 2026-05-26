@@ -12,6 +12,7 @@ PrintChar:
 	moveM.l d0-d7/a0-a7,-(sp)
 		and #$FF,d0
 		sub #32,d0
+
 PrintCharAlt:		
 		;			
 		Move.L  #$40000003,d5
