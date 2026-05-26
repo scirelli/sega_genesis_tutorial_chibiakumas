@@ -1,0 +1,930 @@
+
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+VM_Tick:
+	ld hl,(VM_RamBase+VM_rPC)
+	ifdef vm_useVMEM
+		call vm_VirMemGetHLByteA
+	else
+		ld a,(hl)	;Get A command from the Program
+	endif
+	ld d,a
+	and %11111100
+	cp vm_LastComamnd
+	jr nc,cmd_ERROR		;Command not recognized
+	
+	ld c,a
+	ld b,0
+
+
+;Find the command in the decoder matrix
+	;xor a			;Is this needed?
+	ld ix,vm_DecoderMatrix
+	srl c			;*2
+	add ix,bc		
+	srl c			;*1
+	add ix,bc
+	
+;Calculate our Finisher
+	ld a,(ix+2)		;;%-PPPFFF-
+	ld e,a
+	and %00001110
+	jr z,vm_NoFinish
+	sub %00000010
+	ld b,0
+	ld c,a
+	ld hl,vm_FinVectors
+	add hl,bc
+	ld c,(hl)
+	inc hl
+	ld b,(hl)
+	push bc				;Run this after the actual command
+vm_NoFinish:	
+	
+;Calculate our Comamnd Job
+	ld c,(ix+0)
+	inc hl
+	ld b,(ix+1)
+	inc hl
+	push bc				;Run the actual command
+	
+	
+;Calculate our Prep Job
+	ld a,e		;;%-PPPFFF-
+	and %01110000
+	jr z,vm_NoPrep
+	sub %00010000
+	rrca	;%00001000
+	rrca	;%00000100
+	rrca	;%00000010
+	ld b,0
+	ld c,a
+	ld hl,vm_PrepVectors
+	add hl,bc
+	ld c,(hl)
+	inc hl
+	ld b,(hl)
+	push bc				;Run this before the actual command
+vm_NoPrep:	
+
+	ld hl,(VM_RamBase+VM_rPC)
+	ret					;Run the command list
+
+cmd_ERROR:	
+	ld a,VM_fError 			;Set error flag.
+	call VM_SetFlagA
+	
+	jp VM_PCINC ;Unknown
+	
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Command Processors - Push/Pull has special rules
+
+cmd_PHF:
+	ld a,8
+	call cmd_Stack_GetRegA
+	bit 0,d
+	jr nz,cmd_PULtoIX	;cmd_PLF2
+	jr cmd_PSHfromIX ;jr cmd_PHF2
+
+cmd_PSH:
+	call cmd_Stack_GetReg
+;cmd_PHF2
+	;jr cmd_PSHfromIX
+cmd_PSHfromIX:
+	dec iy
+	dec iy
+	ld e,(ix+0)
+	;ld (iy+0),e
+	ld d,(ix+1)
+	;ld (iy+1),d
+	ld (VM_RamBase+VM_rSP),iy
+	jr VM_LD_IY_DE
+	;ret
+	
+cmd_PUL:
+	call cmd_Stack_GetReg
+;cmd_PLF2
+	;jr cmd_PULtoIX
+	;ret ;jp VM_PCINC
+cmd_PULtoIX:
+	ifdef vm_useVMEM
+		push hl
+			call vm_VirMemGetPhysicalIY
+			ld e,(hl)
+			inc hl
+			ld d,(hl)
+		pop hl
+	else
+		ld e,(iy+0)
+		ld d,(iy+1)
+	endif
+	
+	ifdef vm_useVMEM
+		push hl
+			call vm_VirMemGetPhysicalIX
+			ld (hl),e
+			inc hl
+			ld (hl),d
+		pop hl
+	else
+		ld (ix+0),e			;IX is physical addr
+		ld (ix+1),d
+	endif
+	
+	inc iy
+	inc iy
+	ld (VM_RamBase+VM_rSP),iy
+	ret
+
+	
+cmd_Stack_GetReg:
+	ld a,d
+	and %00000011
+	rla
+cmd_Stack_GetRegA:	
+	; add VM_RamBase&255
+	; ld ixl,a
+	; ld a,VM_RamBase>>8
+	; adc #0
+	; ld ixh,a
+	
+	ld ix,VM_RamBase
+	ld b,0
+	ld c,a
+	add ix,bc
+	ld iy,(VM_RamBase+VM_rSP)
+	ret
+	
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Command Processors - General commands
+	
+
+cmd_LEA:
+	ld e,iyl
+	ld d,iyh
+	ret ;jp VM_PCINC_LD_IX_DE
+	
+cmd_MOV:
+	ld e,c
+	ret ;jp VM_PCINC_LD_IX_E
+	
+cmd_INC16:
+	inc de
+	ret ;jp VM_PCINC_FZ_LD_IX_DE
+	
+cmd_DEC16:
+	dec de
+	ret ;jr VM_PCINC_FZ_LD_IX_DE
+
+cmd_ADD16:
+	ex de,hl
+		add hl,bc
+	ex de,hl
+	ret ;jr VM_PCINC_FZ_LD_IX_DE
+	
+cmd_SWP16:
+	call VM_LD_IY_DE
+cmd_MOV16:
+	ld e,c
+	ld d,b
+	ret ;jp VM_PCINC_LD_IX_DE
+
+	
+cmd_SUB16:
+	ex de,hl
+		or a
+		sbc hl,bc
+	ex de,hl
+	ret ;jp VM_PCINC_FZ_LD_IX_DE
+
+	
+cmd_ADD:
+	ld a,e
+	add c
+	ld e,a
+	ret ;jp VM_PCINC_FZ_LD_IX_E
+	
+cmd_CMP16:
+	ld a,d
+	sub b
+	ret nz
+cmd_CMP: ;
+cmd_SUB:	
+	ld a,e
+	sub c
+	ld e,a
+	ret ;jp VM_PCINC_FZ_LD_IX_E
+
+
+	;ld a,e
+	;cp c
+	;ret ;jp VM_PCINC_FZ
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Command Processors - Prep & Finish
+
+VM_GetAddress_VM_GetFlagC:	
+	call VM_GetAddressPrep
+	;jp VM_GetFlagC
+VM_GetFlagC:			;Set the CPU C flag to the VM one
+	ld a,(VM_RamBase+VM_rF)
+;	and %00000001
+	rra
+	ret
+	
+VM_SetFlagA:			;Set bits in VM F to the CPU A to 
+	push hl
+		ld hl,VM_RamBase+VM_rF	
+		or (hl)
+		ld (hl),a
+	pop hl
+	ret
+	
+cmd_STO16:
+	;jr VM_LD_IY_DE
+	;ret ;jp VM_PCINC	
+VM_LD_IY_DE:	;Save 8 bit resuts, set flags and INC PC
+	ifdef vm_useVMEM
+		push hl
+			call vm_VirMemGetPhysicalIY
+			ld (hl),e
+			inc hl
+			ld (hl),d
+		pop hl
+		ret
+	else
+		ld (IY+1),d
+	endif
+cmd_STO:
+	;jr VM_LD_IY_E
+	;ret ;jp VM_PCINC
+VM_LD_IY_E:	;Save 8 bit resuts, set flags and INC PC
+	ifdef vm_useVMEM
+		push hl
+			call vm_VirMemGetPhysicalIY
+			ld (hl),e
+		pop hl
+	else
+		ld (IY),e
+	endif
+	ret
+	
+VM_PCINC_LD_IX_DE:	;Save 8 bit resuts, set flags and INC PC
+	ifdef vm_useVMEM
+		push hl
+			call vm_VirMemGetPhysicalIX
+			ld (hl),e
+			inc hl
+			ld (hl),d
+		pop hl
+		jr VM_PCINC
+	else
+		ld (ix+1),d
+	endif
+VM_PCINC_LD_IX_E:	;Save 8 bit resuts, set flags and INC PC
+	ifdef vm_useVMEM
+		push hl
+			call vm_VirMemGetPhysicalIX
+			ld (hl),e
+		pop hl
+	else
+		ld (ix),e
+	endif
+	jr VM_PCINC
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+VM_PCINC_FZ_LD_IX_DE:	;Save 8 bit resuts, set flags and INC PC
+	ifdef vm_useVMEM
+		push af
+		push hl
+			call vm_VirMemGetPhysicalIX
+			ld (hl),e
+			inc hl
+			ld (hl),d
+		pop hl
+		pop af
+		jr VM_PCINC_FZ
+	else
+		ld (ix+1),d
+	endif
+VM_PCINC_FZ_LD_IX_E:	;Save 8 bit resuts, set flags and INC PC
+	ifdef vm_useVMEM
+		push af
+		push hl
+			call vm_VirMemGetPhysicalIX
+			ld (hl),e
+		pop hl
+		pop af
+	else
+		ld (ix),e
+	endif
+VM_PCINC_FZ:			;Set flags and INC PC
+	push hl
+		ld hl,VM_RamBase+VM_rF
+		res 0,(hl)
+	jr nc,VM_PCINC_FF2
+		set 0,(hl)	;-C
+VM_PCINC_FF2:
+		res 1,(hl)
+	jr nz,VM_PCINC_FF3
+		set 1,(hl)	;Z-
+VM_PCINC_FF3:
+	pop hl
+	
+VM_PCINC:
+	;ld hl,(VM_RamBase+VM_rPC)
+	inc hl
+VM_PC_Store:	
+	ld (VM_RamBase+VM_rPC),hl
+	
+VM_PC_NoStore:	
+	ret
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Command Processors - General commands
+
+	
+cmd_NEG:;
+	ld a,e
+	neg
+	ld e,a
+	ret ;jp VM_PCINC_FZ_LD_IX_E
+	
+cmd_ROL: ;(F:CZ)
+	;call VM_GetFlagC
+	rl e
+	;ld (ix),e
+	ret ;jp VM_PCINC_FZ_LD_IX_E
+	
+cmd_ROR: ;(F:CZ)
+	;call VM_GetFlagC
+	rr e
+	;ld (ix),e
+	ret ;jp VM_PCINC_FZ_LD_IX_E
+	
+cmd_ASL: ;(F:CZ)
+	sla e
+	;ld (ix),e
+	ret ;jp VM_PCINC_FZ_LD_IX_E
+	
+cmd_ASR: ;(F:CZ)
+	sra e
+	;ld (ix),e
+	ret ;jp VM_PCINC_FZ_LD_IX_E
+	
+cmd_LSR: ;(F:CZ)
+	srl e
+	;ld (ix),e
+	ret ;jp VM_PCINC_FZ_LD_IX_E
+	
+cmd_INC: ;(F:Z)
+	inc e
+	ret ;jp VM_PCINC_FZ_LD_IX_E
+	
+cmd_DEC: ;(F:Z)
+	dec e
+	ret ;jp VM_PCINC_FZ_LD_IX_E
+	
+cmd_TST:
+cmd_AND: ;(F:Z)
+	ld a,e
+	and c
+	ld e,a;ld (ix),a
+	ret ;jp VM_PCINC_FZ_LD_IX_E
+	
+cmd_ORR: ;(F:Z)
+	ld a,e
+	or c
+	ld e,a ;ld (ix),a
+	ret ;jp VM_PCINC_FZ_LD_IX_E
+	
+cmd_XOR: ;(F:Z)
+	ld a,e
+	xor c
+	ld e,a ;ld (ix),a
+	ret ;jp VM_PCINC_FZ_LD_IX_E
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Command Processors - These commands share the same 6 bit code 
+;						Addressing bits define which is the command
+
+	
+cmd_NOP:				
+	ld a,d
+	or a
+	jr z,VM_PCINC		;NOP
+	
+	dec a ;cp vm_RET 1
+	jr z,cmd_RET
+	;cp vm_HLT
+	;jr cmd_HLT
+	;NOP
+	;jr VM_PCINC
+	
+cmd_HLT:
+	ld a,VM_fHalt  			;Set Halt flag.
+	call VM_SetFlagA
+	jr VM_PC_Store
+
+cmd_RET:
+	ld a,VM_rPC
+	call cmd_Stack_GetRegA
+	call cmd_PULtoIX			;Get back PC from stack
+	jr VM_PC_NoStore
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Command Processors - Branch commands have special addressing
+
+
+		
+cmd_BEQ:
+	;call VM_GetAddress_Branch
+	bit 1,a
+	jr nz,cmd_BRA
+	ret ;jp VM_PC_Store
+	
+cmd_BNE:
+	;call VM_GetAddress_Branch
+
+	bit 1,a
+	jr z,cmd_BRA
+	ret ;jp VM_PC_Store	
+	
+cmd_BCS:
+	;call VM_GetAddress_Branch
+	rra ;bit 0,a
+	jr c,cmd_BRA
+	ret ;jp VM_PC_Store
+	
+cmd_BCC:
+	;call VM_GetAddress_Branch
+	rra ;bit 0,a
+	jr nc,cmd_BRA
+	ret ;jp VM_PC_Store	
+	
+
+
+cmd_BRA16:
+	inc hl
+	add hl,bc
+	ret
+			
+cmd_BRA:
+	;call VM_GetAddress_Branch
+	push ix
+	pop hl
+	ret ;jp VM_PC_Store
+	
+vm_GetVector:
+	xor a
+	sla c
+	rla
+	ld b,a
+	add ix,bc
+	ld c,(ix)
+	ld b,(ix+1)	
+	ret
+	
+VM_CauseTrapFromOutsideVM:		;C=Trap Number
+	ld hl,(VM_RamBase+VM_rPC) 	
+	dec hl
+cmd_TRP:
+	inc hl 	;call VM_PCINC
+	ld ix,vm_Traps	
+	call vm_GetVector
+	push bc
+	jr cmd_Call
+	
+cmd_SYS:
+	call VM_PCINC
+	ld ix,vm_SysCalls
+	call vm_GetVector
+	push bc
+	ret
+	
+cmd_BSR16:
+	inc hl
+	push hl
+		add hl,bc
+		push hl
+		pop ix		;IX=BSR Dest
+	pop hl
+cmd_BSR:
+	;call VM_GetAddress_Branch
+	push ix
+cmd_Call:
+		call VM_PC_Store
+		ld a,VM_rPC
+		call cmd_Stack_GetRegA
+		call cmd_PSHfromIX		;Push PC onto stack
+	pop hl
+	ret ;jp VM_PC_Store				;HL=New PC
+	
+
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;Command Processors - Prep & Finish
+
+VM_GetAddress_IMM:
+	push hl
+	pop iy
+	ret
+
+VM_GetAddress_ByteAddr:
+	ifdef vm_useVMEM
+		call vm_VirMemGetHLByteA
+	else
+		ld a,(hl)	;Get A command from the Program
+	endif
+	ld iyl,a
+	ret
+	
+VM_GetAddressPrep16:
+	ld a,d
+	push af
+		call VM_GetAddressPrep
+	pop af
+	and %00000011
+	dec a	;cp %00000001 (imm8 mode)
+	ret nz
+	inc hl			;Extra byte for imm16
+	ret
+	
+VM_GetAddressPrepZPDest:		;Patched for Zeropage dest (INC ZP)
+	ld a,d
+	push af
+		call VM_GetAddressPrep
+	pop af
+	and %00000011	;Zeropage?
+	cp %00000010
+	ret nz 
+	push iy
+	pop ix			;Move Param->Dest
+	ld e,c
+	ret
+	
+VM_GetAddressPrep:
+	ld ix,VM_RamBase		;Dest
+	ld iy,VM_RamBase+2		;Param2
+	
+	ld a,d
+	and %00000011
+	call nz,VM_GetAddress
+	ifdef vm_useVMEM	
+		push hl
+			call vm_VirMemGetPhysicalIY
+			ld c,(hl)
+			inc hl
+			ld b,(hl)
+			
+			call vm_VirMemGetPhysicalIX
+			
+			ld e,(hl)		;BC=PARAM (IY) / E=Low byte of Dest (IX) / D=Command Byte
+			ld a,d
+			and %11111100
+			inc hl
+			ld d,(hl)		;BC=PARAM (IY) / DE=Dest (IX) / 
+		pop hl
+	else
+		ld c,(iy+0)
+		ld b,(iy+1)
+		ld e,(ix+0)		;BC=PARAM (IY) / E=Low byte of Dest (IX) / D=Command Byte
+		ld a,d
+		and %11111100
+		
+		ld d,(ix+1)		;BC=PARAM (IY) / DE=Dest (IX) / 
+	endif
+	
+	ret
+
+
+	
+VM_GetAddress:
+	inc hl ;call VM_PCINC
+
+	ld a,d
+	and %00000011
+	dec a ;cp  %00000001
+	jr z,VM_GetAddress_IMM
+	dec a ;cp  %00000010
+	jr z,VM_GetAddress_ByteAddr
+	;cp  %00000011
+	;jr z,VM_GetAddress_ByteParam
+VM_GetAddress_ByteParam:
+	ifdef vm_useVMEM
+		call vm_VirMemGetHLByteA
+	else
+		ld a,(hl)	;Get A command from the Program
+	endif
+	ld e,a
+	ld b,ixh
+	call VM_GetAddress_ByteParam2_Dest 
+	ld ixh,b
+	ld ixl,c
+	ld a,e
+	rrca
+	rrca
+	rrca
+	rrca
+	ld b,iyh
+	call VM_GetAddress_ByteParam2
+	ld iyh,b
+	ld iyl,c
+	ret
+VM_GetAddress_ByteParam2_Dest:  ;Imm8 Imm16 dest don't make sense for destination, here are some alternatives
+	and %00001111	;Param
+	cp vm_pRF
+	jr z,VM_GetAddress_RF
+	cp vm_pQS
+	jr z,VM_GetAddress_ByteParam_Indir16_RSP
+VM_GetAddress_ByteParam2:
+	and %00001111	;Param
+	ld c,a
+	cp vm_pR6			;0-4=Direct register
+	ret c
+	push hl
+		;push bc
+			sub 5	;vm_pR6
+			sla a
+			
+			add vm_ParameterAddressingModesL
+			ld l,a
+			ld a,vm_ParameterAddressingModesH
+			adc #0
+			ld h,a
+			
+			;ld c,a
+			;ld b,0
+			;ld hl,vm_ParameterAddressingModes
+			;add hl,bc
+			ld a,(hl)
+			inc hl
+			ld h,(hl)
+			ld l,a
+		;pop bc
+	ex (sp),hl
+	ret
+	
+	; cp vm_pR6 ;vm_pR6=5
+	; jr z,VM_GetAddress_R6
+	
+	; cp vm_pI8		;imm 8
+	; jr z,VM_GetAddress_ByteParam_Imm8
+	; cp vm_pI6 		;imm 16
+	; jr z,VM_GetAddress_ByteParam_Imm16
+	; cp vm_pA8		;imm ADDR 8
+	; jr z,VM_GetAddress_ByteParam_ImmAddr8
+	; cp vm_pA6		;imm ADDR 16
+	; jr z,VM_GetAddress_ByteParam_ImmAddr16
+
+	; cp vm_PU2		
+	; jr z,VM_GetAddress_ByteParam_Indir16_R2_PostInc
+	; cp vm_PU6	
+	; jr z,VM_GetAddress_ByteParam_Indir16_R6_PostInc
+	
+	; cp vm_PB2		
+	; jr z,VM_GetAddress_ByteParam_Indir16_R2_BaseImm
+	; cp vm_PB4		
+	; jr z,VM_GetAddress_ByteParam_Indir16_R4_BaseImm
+	
+	; cp vm_PQ4		
+	; jr z,VM_GetAddress_ByteParam_Indir16_R4
+	; cp vm_PQ6		
+	; jr z,VM_GetAddress_ByteParam_Indir16_R6
+	;ret
+	
+	
+VM_GetAddress_ByteParam_Imm16:
+	call VM_GetAddress_ByteParam_Imm8
+	inc hl
+	ret
+	;jp VM_PCINC
+	
+VM_GetAddress_ByteParam_Indir16_RSP:
+	ld bc,(VM_RamBase+VM_rSP)
+	ret	
+VM_GetAddress_RF
+	ld c,vm_rF
+	ret
+VM_GetAddress_R6:
+	ld c,6
+	ret
+	
+; VM_GetAddress_ByteParam_Indir8_R2:	
+	; ld a,(VM_RamBase+VM_rR2)
+	; ld c,a
+	; ret
+; VM_GetAddress_ByteParam_Indir8_R3:	
+	; ld a,(VM_RamBase+VM_rR3)
+	; ld c,a
+	; ret
+VM_GetAddress_ByteParam_Indir16_R2_BaseImm:
+	inc hl
+	push hl	
+		call GetSignExtendedImm8
+		ld hl,(VM_RamBase+VM_rR2)	
+		jr VM_GetAddress_ByteParam_Indir16_R2_BaseImm2
+;		add hl,bc
+		;ld b,h
+		;ld c,l
+	;pop hl
+	;ret
+VM_GetAddress_ByteParam_Indir16_R4_BaseImm:
+	inc hl
+	push hl	
+		call GetSignExtendedImm8
+		ld hl,(VM_RamBase+VM_rR4)	
+VM_GetAddress_ByteParam_Indir16_R2_BaseImm2:
+		add hl,bc
+		ld b,h
+		ld c,l
+	pop hl
+	ret
+
+VM_GetAddress_ByteParam_Indir16_R2_PostInc:
+	ld bc,(VM_RamBase+VM_rR2)
+	push bc
+		inc bc
+		ld (VM_RamBase+VM_rR2),bc
+	pop bc
+	ret
+	
+VM_GetAddress_ByteParam_Indir16_R6_PostInc:
+	ld bc,(VM_RamBase+VM_rR6)
+	push bc
+		inc bc
+		ld (VM_RamBase+VM_rR6),bc
+	pop bc
+	ret
+	
+VM_GetAddress_ByteParam_Indir16_R4:
+	ld bc,(VM_RamBase+VM_rR4)
+	ret
+	
+VM_GetAddress_ByteParam_Indir16_R6:
+	ld bc,(VM_RamBase+VM_rR6)
+	ret
+	
+VM_GetAddress_ByteParam_Imm8:
+	inc hl ;call VM_PCINC
+	ld b,h ;push hl
+	ld c,l;pop bc
+	ret
+	
+	
+VM_GetAddress_ByteParam_ImmAddr16
+	ifdef vm_useVMEM
+		inc hl
+		push hl
+			call vm_VirMemGetPhysical
+			ld c,(hl)
+			inc hl
+			ld b,(hl)
+		pop hl
+		inc hl
+	else
+		inc hl ;call VM_PCINC
+		ld c,(hl)				;Get A command from the Program
+		inc hl ;call VM_PCINC
+		ld b,(hl)				;Get A command from the Program
+	endif
+	ret
+	
+VM_GetAddress_ByteParam_ImmAddr8:
+	inc hl ;call VM_PCINC
+	ifdef vm_useVMEM
+		call vm_VirMemGetHLByteA
+		ld c,a
+	else
+		ld c,(hl)				;Get A command from the Program
+	endif
+	ret
+	
+
+VM_GetAddress_Branch:
+	inc hl ;call VM_PCINC
+	ld a,d
+	and %00000011
+	;cp vm_b2B ;equ 0 	;Branch PC+2
+	jr z,VM_GetAddress_Branch2
+	dec a ;cp vm_bI8 ;equ 1	;Branch PC+Imm8 (Signed relative)
+	jr z,VM_GetAddress_Branch8imm
+	dec a ;cp vm_bI6 ;equ 2	;Branch PC+Imm16 (Absolute addr)
+	jr z,VM_GetAddress_Branch16imm
+	;vm_bR6 ;equ 3	;Branch R6/R7 (Absolute addr in R6/7)
+	
+	ld ix,(VM_RamBase+VM_rR6)
+	jr VM_GetAddress_BranchGetF
+	
+VM_GetAddress_Branch16imm:
+	ifdef vm_useVMEM
+		push hl
+			call vm_VirMemGetPhysical
+			ld a,(hl)
+			ld ixl,a
+			inc hl
+			ld a,(hl)
+			ld ixh,a
+		pop hl
+		inc hl
+		inc hl
+	else
+		ld a,(hl)	;Get A command from the Program
+		ld ixl,a
+		inc hl ;call VM_PCINC
+		ld a,(hl)	;Get A command from the Program
+		inc hl
+		ld ixh,a
+	endif
+	
+	jr VM_GetAddress_BranchGetF
+	
+GetSignExtendedImm8:
+	ld b,0
+	ifdef vm_useVMEM
+		call vm_VirMemGetHLByteA
+		ld c,a
+	else
+		ld c,(hl)				;Get A command from the Program
+	endif
+	
+	inc hl ;call VM_PCINC
+	bit 7,c
+	ret z
+	dec b
+	ret
+	
+	
+VM_GetAddress_Branch8imm:
+	call GetSignExtendedImm8
+	push hl
+	pop ix
+	add ix,bc
+VM_GetAddress_BranchGetF:
+	ld a,(VM_RamBase+VM_rF)
+	ret
+	
+VM_GetAddress_Branch2:
+	push hl
+	pop ix
+	inc ix		;Next Command
+	inc ix		;Next Command
+	jr VM_GetAddress_BranchGetF
+	
+	
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; 	Virtual Memory addressing (optional)
+	
+	
+	ifdef vm_useVMEM
+	
+vm_VirMemGetHLByteA:
+	push hl
+		call vm_VirMemGetPhysical
+		ld a,(hl)
+	pop hl
+	ret
+
+vm_VirMemGetPhysicalIY:
+	push iy
+	jr vm_VirMemGetPhysicalIY2
+	
+	
+vm_VirMemGetPhysicalIX:
+	push ix
+vm_VirMemGetPhysicalIY2:
+	pop hl
+vm_VirMemGetPhysical:
+	ld a,h
+	and %11000000
+	rlca
+	rlca
+	rlca
+	rlca	;%00001100
+	push bc
+		push hl
+			ld hl,VM_RamBase+vm_rBank0
+			ld c,a
+			ld b,0
+			add hl,bc
+			ld c,(hl)
+			inc hl
+			ld b,(hl)
+		pop hl
+		ld a,h
+		and %00111111
+		ld h,a
+		add hl,bc
+	pop bc
+	ret
+	endif	
+	
+	
+	
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
